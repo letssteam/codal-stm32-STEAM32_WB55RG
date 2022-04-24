@@ -1,4 +1,4 @@
-# :warning: THIS README IS FOR **PNUCLEO** NOT **STEAM32**. The target is in early development !  
+# :warning: THIS README IS FOR **PNUCLEO** NOT **STEAM32**. The target is in early development ! :warning:
 
 # Codal target for the PNUCLEO_WB55RG Board [![codal-stm32-PNUCLEO_WB55RG](https://img.shields.io/github/workflow/status/letssteam/codal-stm32-PNUCLEO_WB55RG/codal-buildtarget?label=codal-stm32-PNUCLEO_WB55RG)](https://github.com/letssteam/codal-stm32-PNUCLEO_WB55RG/actions)
 
