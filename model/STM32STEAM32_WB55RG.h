@@ -32,12 +32,12 @@ class STM32STEAM32_WB55RG : public CodalComponent {
     STM32LowLevelTimer lowLevelTimer;
     Timer timer;
     MessageBus messageBus;
-
-    // STM32Serial serial;
-    // STM32I2C i2c1;  // External on arduino stardard pins
-    // STM32SPI spi1;
-
     STM32STEAM32_WB55RG_IO io;
+
+    STM32Serial serial;
+    STM32I2C i2c1;
+    STM32I2C i2c3;
+    // STM32SPI spi1;
 
     // Button buttonUSER;
 

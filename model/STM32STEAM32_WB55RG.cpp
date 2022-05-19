@@ -12,14 +12,19 @@ STM32STEAM32_WB55RG* codal::default_device_instance = nullptr;
  * Create a representation of a device, which includes member variables
  * that represent various device drivers used to control aspects of the STM32 IOT node.
  */
-STM32STEAM32_WB55RG::STM32STEAM32_WB55RG() : lowLevelTimer(TIM2, TIM2_IRQn), timer(lowLevelTimer)
-//   serial(io.rx, io.tx),
-//   i2c1(io.sda, io.scl),
+STM32STEAM32_WB55RG::STM32STEAM32_WB55RG()
+    : lowLevelTimer(TIM2, TIM2_IRQn),
+      timer(lowLevelTimer),
+      io(),
+      serial(io.PB_11, io.PB_10),
+      i2c1(io.PB_9, io.PB_8),
+      i2c3(io.PC_1, io.PC_0)
 //   spi1(io.miso, io.mosi, io.sclk)
 {
     // Clear our status
     status                  = 0;
     default_device_instance = this;
+    default_serial_debug    = &serial;
     // this->init();
 }
 
