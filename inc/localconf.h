@@ -1,5 +1,5 @@
 #pragma once
-#define HSE_VALUE             (*((uint32_t*)0x8003fcc))
+//#define HSE_VALUE             (*((uint32_t*)0x8003fcc))
 #define USB_MAX_PKT_SIZE      64
 #define BOOTLOADER_START_ADDR 0x08000000
 #define BOOTLOADER_END_ADDR   0x08004000
