@@ -1,14 +1,18 @@
 #include "CodalFiber.h"
 #include "STM32STEAM32_WB55RG.h"
 
-#if defined(GPIO_SAMPLE)
-#include "GPIOSample.h"
-#elif defined(PIN_SAMPLE)
-#include "PinSample.h"
-#elif defined(ADC_SAMPLE)
-#include "ADCSample.h"
+#if defined(BUTTONS_SAMPLE)
+#include "ButtonSample.h"
 #elif defined(SERIAL_SAMPLE)
 #include "SerialSample.h"
+#elif defined(VL53L1X_SAMPLE)
+#include "VL53L1X_sample.h"
+#elif defined(HTS221_SAMPLE)
+#include "HTS221_sample.h"
+#elif defined(WSEN_PADS_SAMPLE)
+#include "WSEN-PADS_sample.h"
+#elif defined(SCANNER_I2C)
+#include "ScannerI2C.h"
 #else
 #include "BlinkSample.h"
 #endif
