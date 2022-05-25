@@ -18,8 +18,8 @@ STM32STEAM32_WB55RG::STM32STEAM32_WB55RG()
       io(),
       serial(io.PB_11, io.PB_10),
       i2c1(io.PB_9, io.PB_8),
-      i2c3(io.PC_1, io.PC_0)
-//   spi1(io.miso, io.mosi, io.sclk)
+      i2c3(io.PC_1, io.PC_0),
+      spi1(io.PB_4, io.PB_5, io.PA_1)
 {
     // Clear our status
     status                  = 0;

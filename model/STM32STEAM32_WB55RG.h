@@ -37,7 +37,7 @@ class STM32STEAM32_WB55RG : public CodalComponent {
     STM32Serial serial;
     STM32I2C i2c1;
     STM32I2C i2c3;
-    // STM32SPI spi1;
+    STM32SPI spi1;
 
     // Button buttonUSER;
 
