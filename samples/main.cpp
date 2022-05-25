@@ -13,6 +13,10 @@
 #include "WSEN-PADS_sample.h"
 #elif defined(SCANNER_I2C)
 #include "ScannerI2C.h"
+#elif defined(OLED_SSD1327)
+#include "OLED_SSD1327.h"
+#elif defined(APDS9960)
+#include "APDS9960_sample.h"
 #else
 #include "BlinkSample.h"
 #endif
