@@ -127,6 +127,7 @@ class STM32STEAM32_WB55RG_IO {
     STM32Pin PD_1;
     STM32Pin PE_4;
     // STM32Pin PH_3;
+    STM32Pin NC;
 };
 }  // namespace codal
 
