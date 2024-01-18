@@ -52,13 +52,13 @@ STM32Pin* buzzer  = nullptr;
 MCP23009E* mcp  = nullptr;
 HTS221* hts     = nullptr;
 WSEN_PADS* pres = nullptr;
-// VL53L1X* tof    = nullptr;
-STM32SAI* sai = nullptr;
+VL53L1X* tof    = nullptr;
+STM32SAI* sai   = nullptr;
 PDM2PCM pdm2pcm(16, 8, 0, 1);
 
-// APDS9960* apds  = nullptr;
-ISM330DL* ism = nullptr;
-LIS2MDL* lis  = nullptr;
+APDS9960* apds = nullptr;
+ISM330DL* ism  = nullptr;
+LIS2MDL* lis   = nullptr;
 // STM32SingleWireSerial* jacdac;
 
 ScreenMenu* mainMenu = nullptr;
@@ -159,9 +159,7 @@ void show_tof()
         }
 
         ssd->fill(0x00);
-        // ssd->drawText("Distance: " + fToStr(tof->getDistance(), 2) + " mm", 5, 60, 0xFF);
-        ssd->drawText("  Not available...", 5, 60, 0xFF);
-
+        ssd->drawText("Distance: " + fToStr(tof->getDistance(), 2) + " mm", 5, 60, 0xFF);
         ssd->show();
     }
 }
@@ -244,13 +242,15 @@ void show_optical_sensor()
             break;
         }
 
+        std::array<uint16_t, 4> color_data = apds->getColors();
+
         ssd->fill(0x00);
-        // ssd->drawText("Color Sensor", 25, 20, 0xFF);
-        // ssd->drawText("Red  : " + fToStr(magn.x, 2), 20, 49, 0xFF);
-        // ssd->drawText("Green: " + fToStr(magn.y, 2), 20, 58, 0xFF);
-        // ssd->drawText("Blue : " + fToStr(magn.z, 2), 20, 67, 0xFF);
-        // ssd->drawText("Clear: " + fToStr(magn.z, 2), 20, 76, 0xFF);
-        ssd->drawText("  Not available...", 5, 60, 0xFF);
+        ssd->drawText("Color Sensor", 25, 20, 0xFF);
+        ssd->drawText("(untested)", 25, 28, 0xFF);
+        ssd->drawText("Red  : " + to_string(color_data[0]), 20, 49, 0xFF);
+        ssd->drawText("Green: " + to_string(color_data[1]), 20, 58, 0xFF);
+        ssd->drawText("Blue : " + to_string(color_data[2]), 20, 67, 0xFF);
+        ssd->drawText("Clear: " + to_string(color_data[3]), 20, 76, 0xFF);
         ssd->show();
     }
 }
@@ -533,14 +533,14 @@ void show_pads()
         ssd->drawCircle(22, 20, r, gp4, 0xFF);
         ssd->drawCircle(32, 13, r, false, 0xFF);
         ssd->drawChar('G', 30, 10, 0xFF);
-        ssd->drawChar('3', 6, 38, 0x00);
+        ssd->drawChar('V ', 6, 38, 0x00);
 
         ssd->drawCircle(119, 41, r, true, 0xFF);
         ssd->drawCircle(113, 30, r, gp2, 0xFF);
         ssd->drawCircle(105, 20, r, gp1, 0xFF);
         ssd->drawCircle(95, 13, r, false, 0xFF);
         ssd->drawChar('G', 93, 10, 0xFF);
-        ssd->drawChar('3', 117, 38, 0x00);
+        ssd->drawChar('V', 117, 38, 0x00);
 
         ssd->drawChar(gp3 ? '1' : '0', 12, 27, gp3 ? 0x00 : 0xFF);
         ssd->drawChar(gp4 ? '1' : '0', 20, 17, gp4 ? 0x00 : 0xFF);
@@ -577,6 +577,20 @@ void show_jacdac()
         fiber_sleep(1);
     }
 }
+void show_qwic()
+{
+    ssd->fill(0x00);
+    ssd->drawText("  Not available...", 5, 60, 0xFF);
+    ssd->show();
+
+    while (1) {
+        if (click_button(btnMenu)) {
+            break;
+        }
+
+        fiber_sleep(1);
+    }
+}
 
 void Demo_main(codal::STM32STEAM32_WB55RG& steam32)
 {
@@ -609,11 +623,11 @@ void Demo_main(codal::STM32STEAM32_WB55RG& steam32)
     mcp  = new MCP23009E(steam32.i2c1, 0x40, steam32.io.PB_1, steam32.io.PB_0);
     hts  = new HTS221(&steam32.i2c1, 0xBE);
     pres = new WSEN_PADS(steam32.i2c1, 0xBA);
-    // apds = new APDS9960(&steam32.i2c1, 0x72);
-    // tof  = new VL53L1X(&steam32.i2c1);
-    ism = new ISM330DL(&steam32.i2c1);
-    lis = new LIS2MDL(&steam32.i2c1);
-    sai = new STM32SAI(&steam32.io.PA_10, &steam32.io.PA_3, GPIO_AF3_SAI1, AUDIO_BUFFER);
+    apds = new APDS9960(steam32.i2c1, 0x72);
+    tof  = new VL53L1X(&steam32.i2c1);
+    ism  = new ISM330DL(&steam32.i2c1);
+    lis  = new LIS2MDL(&steam32.i2c1);
+    sai  = new STM32SAI(&steam32.io.PA_10, &steam32.io.PA_3, GPIO_AF3_SAI1, AUDIO_BUFFER);
     // jacdac = new STM32SingleWireSerial(steam32.io.PB_6);
 
     mcp->setup(MCP_GPIO_1, MCP_DIR::INPUT, MCP_PULLUP::PULLUP);
@@ -630,7 +644,7 @@ void Demo_main(codal::STM32STEAM32_WB55RG& steam32)
 
     pres->init();
 
-    // tof->init();
+    tof->init();
 
     ism->init();
     ism->setAccelerometerODR(ISM_ODR::F_1_66_KHZ);
@@ -640,7 +654,7 @@ void Demo_main(codal::STM32STEAM32_WB55RG& steam32)
     lis->setODR(LIS2_ODR::F_50_HZ);
     lis->setLowPassFilter(true);
 
-    // aps->init();
+    apds->init();
 
     if (!sai->init()) {
         printf("Failed to init SAI\r\n");
@@ -669,8 +683,8 @@ void Demo_main(codal::STM32STEAM32_WB55RG& steam32)
                                          {"Screen", []() -> void { show_screen(); }},
                                          {"Battery", []() -> void { show_battery(); }},
                                          {"Pads \"tete\"", []() -> void { show_pads(); }},
-                                         {"QWIC", []() -> void { printf("Call Menu 9\r\n"); }},
-                                         {"jacdac", []() -> void { show_jacdac(); }}};
+                                         {"(QWIC)", []() -> void { show_qwic(); }},
+                                         {"(jacdac)", []() -> void { show_jacdac(); }}};
     mainMenu                          = new ScreenMenu(*ssd, mainMenuEntries);
 
     while (1) {
