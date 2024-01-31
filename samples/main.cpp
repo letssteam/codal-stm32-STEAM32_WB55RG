@@ -17,6 +17,8 @@
 #include "OLED_SSD1327.h"
 #elif defined(APDS9960)
 #include "APDS9960_sample.h"
+#elif defined(DEMO)
+#include "demo_sample.h"
 #else
 #include "BlinkSample.h"
 #endif

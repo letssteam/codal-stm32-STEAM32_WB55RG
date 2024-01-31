@@ -29,7 +29,6 @@
     "DEVICE_PANIC_HEAP_FULL": 1,
     "DEVICE_DMESG_BUFFER_SIZE": 2048,
     "CODAL_DEBUG": "CODAL_DEBUG_DISABLED",
-    "DEVICE_USB": 0,
     "CODAL_TIMESTAMP": "uint64_t",
     "PROCESSOR_WORD_TYPE": "uintptr_t",
     "DEVICE_I2C_IRQ_SHARED": 1,
@@ -39,11 +38,7 @@
     "VARIANT": "variant_STEAM32_WB55RG",
     "VARIANT_H": "\"variant_STEAM32_WB55RG.h\"",
     "STEAM32_WB55RG": 1,
-    "HAL_UART_MODULE_ENABLED": 1,
-    "USBCON": 1,
-    "USBD_USE_CDC": 1,
-    "HAL_PCD_MODULE_ENABLED": 1,
-    "USBD_CLASS_BOS_ENABLED": 1
+    "HAL_UART_MODULE_ENABLED": 1
   },
   "definitions": "-DSTM32WBxx -DSTM32WB55xx -DCUSTOM_PERIPHERAL_PINS -include codal-stm32-STEAM32_WB55RG/inc/localconf.h -DI2C_IRQ_PRIO=0",
   "cmake_definitions": {},
@@ -51,7 +46,7 @@
   "asm_flags": "-fno-exceptions -fno-unwind-tables --specs=nano.specs -mcpu=cortex-m4 -mthumb",
   "c_flags": "-O0 -ggdb3 -std=gnu11 --specs=nano.specs -Warray-bounds -u _printf_float -Wno-format",
   "cpp_flags": "-O0 -ggdb3 -std=gnu++17 -fwrapv -fno-rtti -fno-inline -fno-threadsafe-statics -fno-exceptions -fno-unwind-tables -Wl,--gc-sections -Wl,--sort-common -Wl,--sort-section=alignment -Wno-format -u _printf_float",
-  "linker_flags": "-Wl,--no-wchar-size-warning -Wl,--gc-sections -Wl,--wrap,atexit -Wl,--defsym=LD_FLASH_OFFSET=0 -Wl,--defsym=LD_MAX_SIZE=0x40000 -Wl,--defsym=LD_MAX_DATA_SIZE=0x20000 -mcpu=cortex-m4 -mthumb -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wl,--start-group -lstdc++ -lsupc++ -lm -lc -lgcc -Wl,--end-group",
+  "linker_flags": "-Wl,--print-memory-usage -Wl,--no-wchar-size-warning -Wl,--gc-sections -Wl,--wrap,atexit -Wl,--defsym=LD_FLASH_OFFSET=0 -Wl,--defsym=LD_MAX_SIZE=0x40000 -Wl,--defsym=LD_MAX_DATA_SIZE=0x20000 -mcpu=cortex-m4 -mthumb -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wl,--start-group -lstdc++ -lsupc++ -lm -lc -lgcc -Wl,--end-group",
   "linker_flags_WB55RG": "-Wl,--no-wchar-size-warning -Wl,--gc-sections -Wl,--wrap,atexit -Wl,--defsym=LD_FLASH_OFFSET=0 -Wl,--defsym=LD_MAX_SIZE=0x100000 -Wl,--defsym=LD_MAX_DATA_SIZE=0x40000 -mcpu=cortex-m4 -mthumb -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wl,--start-group -lstdc++ -lsupc++ -lm -lc -lgcc -Wl,--end-group",
   "libraries": [
     {
