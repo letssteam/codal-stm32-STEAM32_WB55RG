@@ -12,6 +12,7 @@ using namespace std;
 #include "APDS9960.h"
 #include "HTS221.h"
 #include "STM32Pin.h"
+#include "STM32RTC.h"
 #include "STM32SAI.h"
 #include "VL53L1X.h"
 #include "WSEN-PADS.h"
@@ -60,6 +61,8 @@ APDS9960* apds = nullptr;
 ISM330DL* ism  = nullptr;
 LIS2MDL* lis   = nullptr;
 // STM32SingleWireSerial* jacdac;
+
+STM32RTC* rtc = nullptr;
 
 ScreenMenu* mainMenu = nullptr;
 
@@ -378,6 +381,233 @@ void show_buzzer()
     delete freq;
 }
 
+const char* weekdayToStr(uint8_t wd)
+{
+    switch (wd) {
+        case 1:
+            return "Monday";
+        case 2:
+            return "Tuesday";
+        case 3:
+            return "Wednesday";
+        case 4:
+            return "Thursday";
+        case 5:
+            return "Friday";
+        case 6:
+            return "Saturday";
+        case 7:
+            return "Sunday";
+        default:
+            return "???";
+    }
+}
+
+void inc_limit(uint8_t* value, uint8_t min, uint8_t max)
+{
+    if (*value == max) {
+        *value = min;
+    }
+    else {
+        (*value)++;
+    }
+}
+
+void dec_limit(uint8_t* value, uint8_t min, uint8_t max)
+{
+    if (*value == min) {
+        *value = max;
+    }
+    else {
+        (*value)--;
+    }
+}
+
+void show_rtc()
+{
+    uint8_t* page         = new uint8_t{0};
+    uint8_t* weekday      = new uint8_t{0};
+    uint8_t* day          = new uint8_t{0};
+    uint8_t* month        = new uint8_t{0};
+    uint8_t* year         = new uint8_t{0};
+    uint8_t* hours        = new uint8_t{0};
+    uint8_t* minutes      = new uint8_t{0};
+    uint8_t* seconds      = new uint8_t{0};
+    bool* isInSettingMode = new bool{false};
+    char time_str[20]     = {0};
+    char date_str[20]     = {0};
+    char setting_str[20]  = {0};
+
+    RTC_Date date;
+    RTC_Time time;
+
+    mcp->interruptOnFalling(MCP_GP_BOTTOM, [=]() {
+        if (!isInSettingMode) return;
+
+        switch (*page) {
+            case 0:
+                dec_limit(weekday, 1, 7);
+                break;
+
+            case 1:
+                dec_limit(day, 1, 31);
+                break;
+
+            case 2:
+                dec_limit(month, 1, 12);
+                break;
+
+            case 3:
+                dec_limit(year, 0, 99);
+                break;
+
+            case 4:
+                dec_limit(hours, 1, 23);
+                break;
+
+            case 5:
+                dec_limit(minutes, 0, 59);
+                break;
+
+            case 6:
+                dec_limit(seconds, 0, 59);
+                break;
+
+            default:
+                break;
+        }
+    });
+
+    mcp->interruptOnFalling(MCP_GP_UP, [=]() {
+        if (!isInSettingMode) return;
+
+        switch (*page) {
+            case 0:
+                inc_limit(weekday, 1, 7);
+                break;
+
+            case 1:
+                inc_limit(day, 1, 31);
+                break;
+
+            case 2:
+                inc_limit(month, 1, 12);
+                break;
+
+            case 3:
+                inc_limit(year, 0, 99);
+                break;
+
+            case 4:
+                inc_limit(hours, 1, 23);
+                break;
+
+            case 5:
+                inc_limit(minutes, 0, 59);
+                break;
+
+            case 6:
+                inc_limit(seconds, 0, 59);
+                break;
+
+            default:
+                break;
+        }
+    });
+
+    mcp->interruptOnFalling(MCP_GP_LEFT, [=]() { dec_limit(page, 0, 6); });
+
+    mcp->interruptOnFalling(MCP_GP_RIGHT, [=]() { inc_limit(page, 0, 6); });
+
+    while (1) {
+        if (click_button(btnMenu)) {
+            break;
+        }
+
+        if (*isInSettingMode) {
+            ssd->fill(0x00);
+
+            switch (*page) {
+                case 0:
+                    sprintf(setting_str, "   %s", weekdayToStr(*weekday));
+                    break;
+
+                case 1:
+                    sprintf(setting_str, "  Day: %02u", *day);
+                    break;
+
+                case 2:
+                    sprintf(setting_str, " Month: %02u", *month);
+                    break;
+
+                case 3:
+                    sprintf(setting_str, "   Year: %02u", *year);
+                    break;
+
+                case 4:
+                    sprintf(setting_str, "  Hours: %02u", *hours);
+                    break;
+
+                case 5:
+                    sprintf(setting_str, "Minutes: %02u", *minutes);
+                    break;
+
+                case 6:
+                    sprintf(setting_str, "Seconds: %02u", *seconds);
+                    break;
+
+                default:
+                    break;
+            }
+
+            ssd->drawText(setting_str, 15, 40, 0xFF);
+            ssd->drawText("^ / v: add / sub", 10, 76, 0xFF);
+            ssd->drawText("< / >: next / prev", 5, 86, 0xFF);
+            ssd->drawText("A : Save & return", 13, 96, 0xFF);
+            ssd->drawText("B : Cancel", 23, 106, 0xFF);
+            ssd->show();
+
+            if (click_button(btnA)) {
+                *isInSettingMode = false;
+                *page            = 0;
+                rtc->setTime(*hours, *minutes, *seconds);
+                rtc->setDate(static_cast<RTC_Week_Day>(*weekday), *day, static_cast<RTC_Month>(*month), *year);
+            }
+            if (click_button(btnB)) {
+                *isInSettingMode = false;
+                *page            = 0;
+            }
+        }
+        else {
+            date = rtc->getDate();
+            time = rtc->getTime();
+
+            *weekday = static_cast<uint8_t>(date.weekday);
+            *day     = date.day;
+            *month   = static_cast<uint8_t>(date.month);
+            *year    = date.year;
+            *hours   = time.hours;
+            *minutes = time.minutes;
+            *seconds = time.seconds;
+
+            sprintf(date_str, "%.3s. %02u/%02u/%02u", weekdayToStr(*weekday), *day, *month, *year);
+            sprintf(time_str, "%02u:%02u:%02u", *hours, *minutes, *seconds);
+
+            ssd->fill(0x00);
+            ssd->drawText(date_str, 25, 30, 0xFF);
+            ssd->drawText(time_str, 40, 40, 0xFF);
+            ssd->drawText("A : Set date & time", 8, 75, 0xFF);
+            ssd->show();
+
+            if (click_button(btnA)) {
+                *isInSettingMode = true;
+            }
+        }
+
+        fiber_sleep(100);
+    }
+}
+
 void show_button()
 {
     while (1) {
@@ -629,6 +859,7 @@ void Demo_main(codal::STM32STEAM32_WB55RG& steam32)
     lis  = new LIS2MDL(&steam32.i2c1);
     sai  = new STM32SAI(&steam32.io.PA_10, &steam32.io.PA_3, GPIO_AF3_SAI1, AUDIO_BUFFER);
     // jacdac = new STM32SingleWireSerial(steam32.io.PB_6);
+    rtc = new STM32RTC();
 
     mcp->setup(MCP_GPIO_1, MCP_DIR::INPUT, MCP_PULLUP::PULLUP);
     mcp->setup(MCP_GPIO_2, MCP_DIR::INPUT, MCP_PULLUP::PULLUP);
@@ -663,6 +894,8 @@ void Demo_main(codal::STM32STEAM32_WB55RG& steam32)
 
     // jacdac->init(1000000);
 
+    rtc->init();
+
     steam32.sleep(500);
 
     ssd->fill(0x00);
@@ -677,6 +910,7 @@ void Demo_main(codal::STM32STEAM32_WB55RG& steam32)
                                          {"Acc / Gyro / Magn", []() -> void { show_acc_gyro_magn(); }},
                                          {"Color Sensor", []() -> void { show_optical_sensor(); }},
                                          {"Microphone", []() -> void { show_microphone(); }},
+                                         {"RTC", []() -> void { show_rtc(); }},
                                          {"Buzzer", []() -> void { show_buzzer(); }},
                                          {"Buttons", []() -> void { show_button(); }},
                                          {"LEDs", []() -> void { show_rgb(); }},
