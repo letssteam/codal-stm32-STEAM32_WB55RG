@@ -14,6 +14,7 @@ using namespace std;
 #include "STM32Pin.h"
 #include "STM32RTC.h"
 #include "STM32SAI.h"
+#include "STM32SingleWireSerial.h"
 #include "VL53L1X.h"
 #include "WSEN-PADS.h"
 #include "ism330dl.h"
@@ -23,7 +24,6 @@ using namespace std;
 #include "pcm_utils.h"
 #include "pdm2pcm.h"
 #include "ssd1327.h"
-// #include "STM32SingleWireSerial.h"
 
 constexpr uint16_t AUDIO_BUFFER = 256;
 
@@ -60,7 +60,7 @@ PDM2PCM pdm2pcm(16, 8, 0, 1);
 APDS9960* apds = nullptr;
 ISM330DL* ism  = nullptr;
 LIS2MDL* lis   = nullptr;
-// STM32SingleWireSerial* jacdac;
+STM32SingleWireSerial* sserial;
 
 STM32RTC* rtc = nullptr;
 
@@ -785,24 +785,67 @@ void show_pads()
 
 void show_jacdac()
 {
-    // ssd->fill(0x00);
-    // ssd->drawText("  Serial output...", 5, 60, 0xFF);
-    // ssd->show();
+    bool is_tx           = true;
+    unsigned tx_counter  = 0;
+    char recv_buffer[11] = {0};
+    uint32_t last_tx     = 0;
 
-    ssd->fill(0x00);
-    ssd->drawText("  Not available...", 5, 60, 0xFF);
-    ssd->show();
+    sserial->setMode(codal::SingleWireMode::SingleWireTx);
 
     while (1) {
         if (click_button(btnMenu)) {
             break;
         }
 
-        // int rec = jacdac->getc();
-        // while (rec > 0) {
-        //     printf("%c", char(rec));
-        //     rec = jacdac->getc();
-        // }
+        if (click_button(btnA)) {
+            if (is_tx) {
+                is_tx = false;
+                sserial->setMode(codal::SingleWireMode::SingleWireRx);
+
+                ssd->fill(0x00);
+                ssd->drawText("Rx mode", 45, 15, 0xFF);
+                ssd->drawText("Receive: ", 30, 50, 0xFF);
+                ssd->drawText("A: Set Tx Mode", 20, 85, 0xFF);
+                ssd->show();
+            }
+            else {
+                is_tx = true;
+                sserial->setMode(codal::SingleWireMode::SingleWireTx);
+            }
+        }
+
+        if (is_tx) {
+            if ((getCurrentMillis() - last_tx) < 1000) {
+                continue;
+            }
+
+            ssd->fill(0x00);
+            ssd->drawText("Tx mode", 45, 15, 0xFF);
+            ssd->drawText("Send: " + to_string(tx_counter), 40, 50, 0xFF);
+            ssd->drawText("A: Set Rx Mode", 20, 85, 0xFF);
+            ssd->show();
+
+            sserial->putc(char(0x30 + tx_counter));
+
+            last_tx = getCurrentMillis();
+            if (++tx_counter > 9) {
+                tx_counter = 0;
+            }
+        }
+        else {
+            int recv = sserial->getc();
+            if (recv == DEVICE_NO_DATA) {
+                continue;
+            }
+
+            sprintf(recv_buffer, "Receive: %c", char(recv));
+
+            ssd->fill(0x00);
+            ssd->drawText("Rx mode", 45, 15, 0xFF);
+            ssd->drawText(string(recv_buffer, 10), 30, 50, 0xFF);
+            ssd->drawText("A: Set Tx Mode", 20, 85, 0xFF);
+            ssd->show();
+        }
 
         fiber_sleep(1);
     }
@@ -850,16 +893,16 @@ void Demo_main(codal::STM32STEAM32_WB55RG& steam32)
     ssd->drawText("Initialization...", 20, 60, 0xFF);
     ssd->show();
 
-    mcp  = new MCP23009E(steam32.i2c1, 0x40, steam32.io.PB_1, steam32.io.PB_0);
-    hts  = new HTS221(&steam32.i2c1, 0xBE);
-    pres = new WSEN_PADS(steam32.i2c1, 0xBA);
-    apds = new APDS9960(steam32.i2c1, 0x72);
-    tof  = new VL53L1X(&steam32.i2c1);
-    ism  = new ISM330DL(&steam32.i2c1);
-    lis  = new LIS2MDL(&steam32.i2c1);
-    sai  = new STM32SAI(&steam32.io.PA_10, &steam32.io.PA_3, GPIO_AF3_SAI1, AUDIO_BUFFER);
-    // jacdac = new STM32SingleWireSerial(steam32.io.PB_6);
-    rtc = new STM32RTC();
+    mcp     = new MCP23009E(steam32.i2c1, 0x40, steam32.io.PB_1, steam32.io.PB_0);
+    hts     = new HTS221(&steam32.i2c1, 0xBE);
+    pres    = new WSEN_PADS(steam32.i2c1, 0xBA);
+    apds    = new APDS9960(steam32.i2c1, 0x72);
+    tof     = new VL53L1X(&steam32.i2c1);
+    ism     = new ISM330DL(&steam32.i2c1);
+    lis     = new LIS2MDL(&steam32.i2c1);
+    sai     = new STM32SAI(&steam32.io.PA_10, &steam32.io.PA_3, GPIO_AF3_SAI1, AUDIO_BUFFER);
+    sserial = new STM32SingleWireSerial(steam32.io.PB_6);
+    rtc     = new STM32RTC();
 
     mcp->setup(MCP_GPIO_1, MCP_DIR::INPUT, MCP_PULLUP::PULLUP);
     mcp->setup(MCP_GPIO_2, MCP_DIR::INPUT, MCP_PULLUP::PULLUP);
@@ -892,7 +935,7 @@ void Demo_main(codal::STM32STEAM32_WB55RG& steam32)
     }
     sai->onReceiveData(micro_on_data);
 
-    // jacdac->init(1000000);
+    sserial->init(115200);
 
     rtc->init();
 
@@ -917,8 +960,8 @@ void Demo_main(codal::STM32STEAM32_WB55RG& steam32)
                                          {"Screen", []() -> void { show_screen(); }},
                                          {"Battery", []() -> void { show_battery(); }},
                                          {"Pads \"tete\"", []() -> void { show_pads(); }},
-                                         {"(QWIC)", []() -> void { show_qwic(); }},
-                                         {"(jacdac)", []() -> void { show_jacdac(); }}};
+                                         {"jacdac (serial)", []() -> void { show_jacdac(); }},
+                                         {"(QWIC)", []() -> void { show_qwic(); }}};
     mainMenu                          = new ScreenMenu(*ssd, mainMenuEntries);
 
     while (1) {
