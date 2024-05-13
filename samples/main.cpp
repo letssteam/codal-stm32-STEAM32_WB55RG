@@ -5,6 +5,8 @@
 #include "ButtonSample.h"
 #elif defined(SERIAL_SAMPLE)
 #include "SerialSample.h"
+#elif defined(SAI_SAMPLE)
+#include "SAI_sample.h"
 #elif defined(VL53L1X_SAMPLE)
 #include "VL53L1X_sample.h"
 #elif defined(HTS221_SAMPLE)
