@@ -22,13 +22,10 @@ void ScannerI2C(codal::STM32STEAM32_WB55RG& steam32)
     for (uint16_t m = 0; m < 0x100; m += 0x10) {
         printf("%2X ", m);
         for (uint8_t l = 0; l < 0x10; l++) {
-            i2c.beginTransmission(m | l);
-            i2c.write(0);
-            i2c.write(0);
-            auto result = i2c.endTransmission();
+            uint8_t addr = m | l;
 
-            if (result == i2c_status_e::I2C_OK) {
-                printf(" %2X ", m | l);
+            if ((addr & 0x01) == 0 && i2c.isDeviceAvailable(addr)) {
+                printf(" %2X ", addr);
             }
             else {
                 printf(" -- ");
