@@ -1,6 +1,5 @@
 #pragma once
 
-#include "APDS9960.h"
 #include "STM32STEAM32_WB55RG.h"
 
 #ifndef SAMPLE_MAIN
