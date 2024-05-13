@@ -3,6 +3,7 @@
 
 #include <string>
 
+#include "APDS9960.h"
 #include "ssd1327.h"
 
 void APDS9960_SampleMain(codal::STM32STEAM32_WB55RG& steam32)
@@ -16,6 +17,8 @@ void APDS9960_SampleMain(codal::STM32STEAM32_WB55RG& steam32)
 
     codal::SSD1327_SPI ssd(steam32.spi1, steam32.io.PD_0, steam32.io.PB_4, steam32.io.PA_12, 128, 128);
     ssd.init();
+    ssd.fill(0x00);
+    ssd.show();
 
     codal::APDS9960 apds(steam32.i2c1, 0x72);
     apds.init();
