@@ -763,7 +763,7 @@ void show_pads()
         ssd->drawCircle(22, 20, r, gp4, 0xFF);
         ssd->drawCircle(32, 13, r, false, 0xFF);
         ssd->drawChar('G', 30, 10, 0xFF);
-        ssd->drawChar('V ', 6, 38, 0x00);
+        ssd->drawChar('V', 6, 38, 0x00);
 
         ssd->drawCircle(119, 41, r, true, 0xFF);
         ssd->drawCircle(113, 30, r, gp2, 0xFF);
