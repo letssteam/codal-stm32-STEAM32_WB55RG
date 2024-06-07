@@ -21,6 +21,8 @@
 #include "OLED_SSD1327.h"
 #elif defined(APDS9960)
 #include "APDS9960_sample.h"
+#elif defined(BQ27441)
+#include "BQ27441_sample.h"
 #elif defined(RTC)
 #include "RTC_sample.h"
 #elif defined(DEMO)
