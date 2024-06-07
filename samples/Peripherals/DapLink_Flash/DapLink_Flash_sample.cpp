@@ -48,6 +48,8 @@ void DAPLINK_FLASH_Sample(codal::STM32STEAM32_WB55RG& steam32)
                     break;
                 }
 
+                    // Read a sector (256 bytes) seems to break the I2C bus. This is not an issue, because there is no
+                    // reason to read a secto for the moment.
                     // case 'R': {
                     //     i2c.beginTransmission(ADDRESS);
                     //     i2c.write(0x20);
