@@ -23,7 +23,7 @@
 #include "APDS9960_sample.h"
 #elif defined(BQ27441)
 #include "BQ27441_sample.h"
-#elif defined(RTC)
+#elif defined(RTC_SAMPLE)
 #include "RTC_sample.h"
 #elif defined(DAPLINK_FLASH)
 #include "DapLink_Flash_sample.h"
