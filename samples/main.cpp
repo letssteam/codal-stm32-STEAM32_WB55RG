@@ -25,6 +25,8 @@
 #include "BQ27441_sample.h"
 #elif defined(RTC)
 #include "RTC_sample.h"
+#elif defined(DAPLINK_FLASH)
+#include "DapLink_Flash_sample.h"
 #elif defined(DEMO)
 #include "demo_sample.h"
 #else
