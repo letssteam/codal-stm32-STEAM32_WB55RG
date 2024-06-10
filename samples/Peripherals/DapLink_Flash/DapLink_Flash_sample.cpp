@@ -160,9 +160,18 @@ void DAPLINK_FLASH_Sample(codal::STM32STEAM32_WB55RG& steam32)
 
                     printf("Test done (success: %d/%d (%d %%) -- failure: %d/%d (%d %%)\n", success, total,
                            success * 100 / total, failure, total, failure * 100 / total);
+                    break;
                 }
 
                 default:
+                    printf(
+                        "USAGE:\n\tW: Who Am I\n\
+                        \tF: Set filename\n\
+                        \tG: Get filename\n\n\
+                        \tA: Apped data to file\n\
+                        \tC: Clear data file\n\n\
+                        \tS: Read Status & Error register\n\n\
+                        \tL: Start stress test\n");
                     break;
             }
         }
