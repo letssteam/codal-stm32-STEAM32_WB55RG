@@ -3,7 +3,14 @@
 #include <cctype>
 #include <cstdio>
 
-constexpr uint8_t ADDRESS = 0x76;
+constexpr uint8_t ADDRESS               = 0x76;
+constexpr uint8_t FLASH_WHO_AM_I        = 0x01;
+constexpr uint8_t FLASH_APPEND_FILE     = 0x11;
+constexpr uint8_t FLASH_CLEAR_FILE      = 0x10;
+constexpr uint8_t FLASH_SET_FILENAME    = 0x03;
+constexpr uint8_t FLASH_GET_FILENAME    = 0x04;
+constexpr uint8_t FLASH_READ_STATUS_REG = 0x80;
+constexpr uint8_t FLASH_READ_ERROR_REG  = 0x81;
 
 bool state_led = false;
 
@@ -40,7 +47,7 @@ void DAPLINK_FLASH_Sample(codal::STM32STEAM32_WB55RG& steam32)
                     codal::ManagedString str = steam32.serial.readUntil('\n', codal::SYNC_SPINWAIT);
 
                     i2c.beginTransmission(ADDRESS);
-                    i2c.write(0x11);
+                    i2c.write(FLASH_APPEND_FILE);
                     for (int16_t i = 0; i < str.length() && i < 256; ++i) {
                         i2c.write(uint8_t(str.charAt(i)));
                     }
@@ -56,7 +63,7 @@ void DAPLINK_FLASH_Sample(codal::STM32STEAM32_WB55RG& steam32)
                     //     i2c.write(0x00);
                     //     i2c.endTransmission();
 
-                    //     auto result = i2c.read(0x77, 256);
+                    //     auto result = i2c.read(ADDRESS, 256);
                     //     printf("Sector 0 data (%d):\n'%.256s'\n", result.size(), result.data());
 
                     //     break;
@@ -64,17 +71,17 @@ void DAPLINK_FLASH_Sample(codal::STM32STEAM32_WB55RG& steam32)
 
                 case 'W': {
                     i2c.beginTransmission(ADDRESS);
-                    i2c.write(0x01);
+                    i2c.write(FLASH_WHO_AM_I);
                     i2c.endTransmission();
 
-                    auto result = i2c.read(0x77, 1);
+                    auto result = i2c.read(ADDRESS, 1);
                     printf("Who Am I = 0x%02X\n", result[0]);
                     break;
                 }
 
                 case 'C':
                     i2c.beginTransmission(ADDRESS);
-                    i2c.write(0x10);
+                    i2c.write(FLASH_CLEAR_FILE);
                     i2c.endTransmission();
                     break;
 
@@ -92,7 +99,7 @@ void DAPLINK_FLASH_Sample(codal::STM32STEAM32_WB55RG& steam32)
                     printf("\n");
 
                     i2c.beginTransmission(ADDRESS);
-                    i2c.write(0x03);
+                    i2c.write(FLASH_SET_FILENAME);
                     for (uint16_t i = 0; i < str.length(); ++i) {
                         i2c.write(uint8_t(str.charAt(i)));
                     }
@@ -102,27 +109,27 @@ void DAPLINK_FLASH_Sample(codal::STM32STEAM32_WB55RG& steam32)
 
                 case 'G': {
                     i2c.beginTransmission(ADDRESS);
-                    i2c.write(0x04);
+                    i2c.write(FLASH_GET_FILENAME);
                     i2c.endTransmission();
 
-                    auto result = i2c.read(0x77, 11);
+                    auto result = i2c.read(ADDRESS, 11);
                     printf("filename = '%.11s'\n", result.data());
                     break;
                 }
 
                 case 'S': {
                     i2c.beginTransmission(ADDRESS);
-                    i2c.write(0x80);
+                    i2c.write(FLASH_READ_STATUS_REG);
                     i2c.endTransmission();
 
-                    auto status_1 = i2c.read(0x77, 1);
+                    auto status_1 = i2c.read(ADDRESS, 1);
                     printf("Status = 0x%02X\n", status_1[0]);
 
                     i2c.beginTransmission(ADDRESS);
-                    i2c.write(0x81);
+                    i2c.write(FLASH_READ_ERROR_REG);
                     i2c.endTransmission();
 
-                    auto status_err = i2c.read(0x77, 1);
+                    auto status_err = i2c.read(ADDRESS, 1);
                     printf("Error status = 0x%02X\n", status_err[0]);
                     break;
                 }
@@ -132,12 +139,14 @@ void DAPLINK_FLASH_Sample(codal::STM32STEAM32_WB55RG& steam32)
                     uint16_t success = 0;
                     uint16_t failure = 0;
 
+                    printf("Start Flash/I2C stress test (reading the filename %d times)\n", total);
+
                     for (uint16_t i = 0; i < total; i++) {
                         i2c.beginTransmission(ADDRESS);
-                        i2c.write(0x04);
+                        i2c.write(FLASH_GET_FILENAME);
                         i2c.endTransmission();
 
-                        auto result = i2c.read(0x77, 11);
+                        auto result = i2c.read(ADDRESS, 11);
 
                         if (result[0] == 0x00) {
                             failure++;
