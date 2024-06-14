@@ -15,6 +15,7 @@ using namespace std;
 #include "STM32Pin.h"
 #include "STM32RTC.h"
 #include "STM32SAI.h"
+#include "STM32SingleWireSerial.h"
 #include "VL53L1X.h"
 #include "WSEN-PADS.h"
 #include "ism330dl.h"
@@ -24,7 +25,6 @@ using namespace std;
 #include "pcm_utils.h"
 #include "pdm2pcm.h"
 #include "ssd1327.h"
-// #include "STM32SingleWireSerial.h"
 
 constexpr uint16_t AUDIO_BUFFER = 256;
 
@@ -62,7 +62,7 @@ PDM2PCM pdm2pcm(16, 8, 0, 1);
 APDS9960* apds = nullptr;
 ISM330DL* ism  = nullptr;
 LIS2MDL* lis   = nullptr;
-// STM32SingleWireSerial* jacdac;
+STM32SingleWireSerial* jacdac;
 
 STM32RTC* rtc = nullptr;
 
@@ -830,26 +830,67 @@ void show_pads()
 
 void show_jacdac()
 {
-    // ssd->fill(0x00);
-    // ssd->drawText("  Serial output...", 5, 60, 0xFF);
-    // ssd->show();
+    uint32_t timeout     = 0;
+    uint8_t data_to_send = 0;
+    char buff[3]         = {0};
+    bool is_tx_mode      = true;
+    jacdac->setMode(SingleWireMode::SingleWireTx);
 
-    ssd->fill(0x00);
-    ssd->drawText("  Not available...", 5, 60, 0xFF);
-    ssd->show();
+    timeout = getCurrentMillis();
 
     while (1) {
         if (click_button(btnMenu)) {
             break;
         }
 
-        // int rec = jacdac->getc();
-        // while (rec > 0) {
-        //     printf("%c", char(rec));
-        //     rec = jacdac->getc();
-        // }
+        if (click_button(btnA)) {
+            if (is_tx_mode) {
+                is_tx_mode = false;
+                jacdac->setMode(SingleWireMode::SingleWireRx);
+                memset(buff, 'x', 3);
+            }
+            else {
+                is_tx_mode = true;
+                jacdac->setMode(SingleWireMode::SingleWireTx);
+                data_to_send = 0;
+            }
 
-        fiber_sleep(1);
+            timeout = getCurrentMillis();
+        }
+
+        if (is_tx_mode) {
+            if (getCurrentMillis() - timeout > 1000) {
+                data_to_send++;
+                timeout = getCurrentMillis();
+            }
+
+            sprintf(buff, "%03u", data_to_send);
+
+            ssd->fill(0x00);
+            ssd->drawText("Mode: Tx", 40, 24, 0xFF);
+            ssd->drawText("Send value:", 34, 51, 0xFF);
+            ssd->drawText(buff, 56, 62, 0xFF);
+            ssd->drawText("A: Change to Rx", 19, 95, 0xFF);
+            ssd->show();
+
+            jacdac->putc(data_to_send);
+        }
+        else {
+            uint8_t rcv = jacdac->getc();
+
+            if (rcv != DEVICE_NO_DATA) {
+                sprintf(buff, "%03u", rcv);
+            }
+
+            ssd->fill(0x00);
+            ssd->drawText("Mode: Rx", 40, 24, 0xFF);
+            ssd->drawText("Read value:", 34, 51, 0xFF);
+            ssd->drawText(buff, 56, 62, 0xFF);
+            ssd->drawText("A: Change to Tx", 19, 95, 0xFF);
+            ssd->show();
+        }
+
+        fiber_sleep(100);
     }
 }
 void show_qwic()
@@ -904,8 +945,8 @@ void Demo_main(codal::STM32STEAM32_WB55RG& steam32)
     ism     = new ISM330DL(&steam32.i2c1);
     lis     = new LIS2MDL(&steam32.i2c1);
     sai     = new STM32SAI(&steam32.io.PA_10, &steam32.io.PA_3, GPIO_AF3_SAI1, AUDIO_BUFFER);
-    // jacdac = new STM32SingleWireSerial(steam32.io.PB_6);
-    rtc = new STM32RTC();
+    jacdac  = new STM32SingleWireSerial(steam32.io.PB_6);
+    rtc     = new STM32RTC();
 
     battery->init();
 
@@ -940,7 +981,8 @@ void Demo_main(codal::STM32STEAM32_WB55RG& steam32)
     }
     sai->onReceiveData(micro_on_data);
 
-    // jacdac->init(1000000);
+    jacdac->init(115200);
+    jacdac->setMode(SingleWireMode::SingleWireTx);
 
     rtc->init();
 
