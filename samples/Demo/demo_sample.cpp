@@ -10,6 +10,7 @@ using namespace std;
 #include <vector>
 
 #include "APDS9960.h"
+#include "BQ27441.h"
 #include "HTS221.h"
 #include "STM32Pin.h"
 #include "STM32RTC.h"
@@ -50,11 +51,12 @@ STM32Pin* btnA    = nullptr;
 STM32Pin* btnB    = nullptr;
 STM32Pin* buzzer  = nullptr;
 
-MCP23009E* mcp  = nullptr;
-HTS221* hts     = nullptr;
-WSEN_PADS* pres = nullptr;
-VL53L1X* tof    = nullptr;
-STM32SAI* sai   = nullptr;
+BQ27441* battery = nullptr;
+MCP23009E* mcp   = nullptr;
+HTS221* hts      = nullptr;
+WSEN_PADS* pres  = nullptr;
+VL53L1X* tof     = nullptr;
+STM32SAI* sai    = nullptr;
 PDM2PCM pdm2pcm(16, 8, 0, 1);
 
 APDS9960* apds = nullptr;
@@ -68,8 +70,6 @@ ScreenMenu* mainMenu = nullptr;
 
 uint16_t rawMicData[AUDIO_BUFFER];
 bool processedMicData = true;
-
-enum SnakeDir { UP, RIGHT, DOWN, LEFT };
 
 string fToStr(float value, unsigned pres)
 {
@@ -730,16 +730,61 @@ void show_screen()
 
 void show_battery()
 {
+    uint32_t timeout   = getCurrentMillis();
+    bool is_first_page = true;
+    char buff[16]      = {0};
+
+    battery->reset();
+
+    ssd->fill(0x00);
+    ssd->drawText("Waiting for the init", 4, 60, 0xFF);
+    ssd->show();
+
     while (1) {
         if (click_button(btnMenu)) {
             break;
         }
 
-        ssd->fill(0x00);
-        ssd->drawText("  Not available...", 5, 60, 0xFF);
-        ssd->show();
+        if (!battery->is_init()) {
+            if ((getCurrentMillis() - timeout) >= 5000) {
+                ssd->fill(0x00);
+                ssd->drawText("TIMEOUT", 44, 50, 0xFF);
+                ssd->drawText("No battery connected", 4, 60, 0xFF);
+                ssd->show();
+            }
+        }
+        else {
+            if (is_first_page) {
+                ssd->fill(0x00);
+                ssd->drawText("Charge: " + fToStr(battery->state_of_charge(), 0) + "%", 5, 45, 0xFF);
+                ssd->drawText("Voltage: " + fToStr(battery->get_voltage(), 2) + "V", 5, 53, 0xFF);
+                ssd->drawText("Avg. Current: " + fToStr(battery->get_average_current(), 2) + "A", 5, 62, 0xFF);
+                ssd->drawText("Avg. Power: " + fToStr(battery->get_average_power(), 2) + "W", 5, 71, 0xFF);
+                ssd->show();
+            }
+            else {
+                ssd->fill(0x00);
+                ssd->drawText("Temp.: " + fToStr(battery->get_temperature(), 2) + "C", 5, 45, 0xFF);
 
-        fiber_sleep(100);
+                sprintf(buff, "0x%04X", battery->device_type());
+                ssd->drawText("Dev. type: " + std::string(buff), 5, 53, 0xFF);
+
+                sprintf(buff, "0x%04X", battery->firmware_version());
+                ssd->drawText("Firm. ver: " + std::string(buff), 5, 62, 0xFF);
+
+                sprintf(buff, "0x%04X", battery->dm_code());
+                ssd->drawText("DM code: " + std::string(buff), 5, 71, 0xFF);
+
+                ssd->show();
+            }
+
+            if (getCurrentMillis() - timeout > 3000) {
+                is_first_page = !is_first_page;
+                timeout       = getCurrentMillis();
+            }
+        }
+
+        fiber_sleep(10);
     }
 }
 
@@ -847,19 +892,22 @@ void Demo_main(codal::STM32STEAM32_WB55RG& steam32)
 
     ssd->init();
     ssd->fill(0x00);
-    ssd->drawText("Initialization...", 20, 60, 0xFF);
+    ssd->drawText("Initialization...", 15, 60, 0xFF);
     ssd->show();
 
-    mcp  = new MCP23009E(steam32.i2c1, 0x40, steam32.io.PB_1, steam32.io.PB_0);
-    hts  = new HTS221(&steam32.i2c1, 0xBE);
-    pres = new WSEN_PADS(steam32.i2c1, 0xBA);
-    apds = new APDS9960(steam32.i2c1, 0x72);
-    tof  = new VL53L1X(&steam32.i2c1);
-    ism  = new ISM330DL(&steam32.i2c1);
-    lis  = new LIS2MDL(&steam32.i2c1);
-    sai  = new STM32SAI(&steam32.io.PA_10, &steam32.io.PA_3, GPIO_AF3_SAI1, AUDIO_BUFFER);
+    battery = new BQ27441(&steam32.i2c1);
+    mcp     = new MCP23009E(steam32.i2c1, 0x40, steam32.io.PB_1, steam32.io.PB_0);
+    hts     = new HTS221(&steam32.i2c1, 0xBE);
+    pres    = new WSEN_PADS(steam32.i2c1, 0xBA);
+    apds    = new APDS9960(steam32.i2c1, 0x72);
+    tof     = new VL53L1X(&steam32.i2c1);
+    ism     = new ISM330DL(&steam32.i2c1);
+    lis     = new LIS2MDL(&steam32.i2c1);
+    sai     = new STM32SAI(&steam32.io.PA_10, &steam32.io.PA_3, GPIO_AF3_SAI1, AUDIO_BUFFER);
     // jacdac = new STM32SingleWireSerial(steam32.io.PB_6);
     rtc = new STM32RTC();
+
+    battery->init();
 
     mcp->setup(MCP_GPIO_1, MCP_DIR::INPUT, MCP_PULLUP::PULLUP);
     mcp->setup(MCP_GPIO_2, MCP_DIR::INPUT, MCP_PULLUP::PULLUP);
