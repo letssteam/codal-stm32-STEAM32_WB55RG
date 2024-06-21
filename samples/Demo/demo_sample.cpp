@@ -465,7 +465,7 @@ void show_rtc()
                 break;
 
             case 4:
-                dec_limit(hours, 1, 23);
+                dec_limit(hours, 0, 23);
                 break;
 
             case 5:
@@ -641,6 +641,9 @@ void show_button()
 void show_rgb()
 {
     uint8_t* select_line = new uint8_t(0);
+    int state_red        = 0;
+    int state_green      = 0;
+    int state_blue       = 0;
 
     mcp->interruptOnFalling(MCP_GP_BOTTOM, [=]() {
         if (*select_line < 2) {
@@ -662,23 +665,26 @@ void show_rgb()
         if (click_button(btnA)) {
             switch (*select_line) {
                 case 0:
-                    led_red->setDigitalValue(!led_red->getDigitalValue());
+                    state_red = state_red == 0 ? 1 : 0;
+                    led_red->setDigitalValue(state_red);
                     break;
 
                 case 1:
-                    led_green->setDigitalValue(!led_green->getDigitalValue());
+                    state_green = state_green == 0 ? 1 : 0;
+                    led_green->setDigitalValue(state_green);
                     break;
 
                 case 2:
-                    led_blue->setDigitalValue(!led_blue->getDigitalValue());
+                    state_blue = state_blue == 0 ? 1 : 0;
+                    led_blue->setDigitalValue(state_blue);
                     break;
             }
         }
 
         ssd->fill(0x00);
         ssd->drawText("Toggle Red LED", 15, 51, 0xFF);
-        ssd->drawText("Toggle Blue LED", 15, 60, 0xFF);
-        ssd->drawText("Toggle Green LED", 15, 69, 0xFF);
+        ssd->drawText("Toggle Green LED", 15, 60, 0xFF);
+        ssd->drawText("Toggle Blue LED", 15, 69, 0xFF);
         ssd->drawText(">", 5, (*select_line) * 9 + 51, 0xFF);
         ssd->show();
 
