@@ -68,6 +68,9 @@ STM32RTC* rtc = nullptr;
 
 ScreenMenu* mainMenu = nullptr;
 
+STM32Pin* microbit_pins[19]       = {nullptr};
+STM32Pin* microbit_analog_pins[3] = {nullptr};
+
 uint16_t rawMicData[AUDIO_BUFFER];
 bool processedMicData = true;
 
@@ -828,6 +831,180 @@ void show_pads()
     }
 }
 
+void show_microbit()
+{
+    constexpr uint16_t arc_angle = 360 / 19;
+    uint8_t pin_index            = 0;
+    uint32_t start_time          = 0;
+    bool* is_led_mode            = new bool{true};
+
+    mcp->interruptOnFalling(MCP_GP_BOTTOM, [=]() {
+        *is_led_mode = !(*is_led_mode);
+
+        if (*is_led_mode) {
+            microbit_pins[0]->setDigitalValue(0);
+        }
+        else {
+            microbit_pins[0]->getDigitalValue();
+        }
+    });
+
+    for (int i = 0; i < 19; ++i) {
+        microbit_pins[i]->setDigitalValue(0);
+    }
+
+    while (1) {
+        if (click_button(btnMenu)) {
+            break;
+        }
+
+        if (*is_led_mode) {
+            if (getCurrentMillis() - start_time < 500) {
+                continue;
+            }
+
+            if (pin_index == 0) {
+                microbit_pins[18]->setDigitalValue(0);
+            }
+            else {
+                microbit_pins[pin_index - 1]->setDigitalValue(0);
+            }
+
+            microbit_pins[pin_index]->setDigitalValue(1);
+
+            ssd->fill(0x00);
+            ssd->drawArc(64, 64, 60, arc_angle * pin_index, arc_angle * (pin_index + 1), 0xFF);
+            ssd->drawText("Turn on pin:", 29, 40, 0xFF);
+            ssd->drawText((pin_index + 1 < 10 ? "0" : "") + to_string(pin_index + 1), 57, 49, 0xFF);
+            ssd->drawText("Down: Self test", 20, 90, 0xFF);
+            ssd->show();
+
+            pin_index++;
+            if (pin_index >= 19) {
+                pin_index = 0;
+            }
+            start_time = getCurrentMillis();
+        }
+        else {
+            if (pin_index == 0) {
+                microbit_pins[18]->setDigitalValue(0);
+                pin_index = 1;
+            }
+            else {
+                microbit_pins[pin_index - 1]->setDigitalValue(0);
+            }
+
+            microbit_pins[pin_index]->setDigitalValue(1);
+
+            ssd->fill(0x00);
+            ssd->drawArc(64, 64, 60, arc_angle * pin_index, arc_angle * (pin_index + 1), 0xFF);
+            ssd->drawText("Turn on pin:", 29, 30, 0xFF);
+            ssd->drawText((pin_index + 1 < 10 ? "0" : "") + to_string(pin_index + 1), 57, 39, 0xFF);
+            ssd->drawText("Result:", 46, 57, 0xFF);
+            ssd->drawText(microbit_pins[0]->getDigitalValue() == 1 ? "O.K" : "K.O", 55, 69, 0xFF);
+            ssd->drawText("Down: LED test", 22, 90, 0xFF);
+            ssd->show();
+
+            if (getCurrentMillis() - start_time >= 500) {
+                pin_index++;
+                if (pin_index >= 19) {
+                    pin_index = 0;
+                }
+                start_time = getCurrentMillis();
+            }
+        }
+
+        fiber_sleep(1);
+    }
+
+    for (int i = 0; i < 19; ++i) {
+        microbit_pins[i]->setDigitalValue(0);
+    }
+
+    btnA->getDigitalValue();
+    btnB->getDigitalValue();
+}
+
+void show_pwm_microbit()
+{
+    constexpr uint16_t pwm_step = 20;
+    uint32_t start_timeout      = 0;
+    uint8_t* pin_id             = new uint8_t{0};
+    uint16_t* pwm_value         = new uint16_t{0};
+
+    mcp->interruptOnFalling(MCP_GP_BOTTOM, [=]() {
+        *pin_id = ((*pin_id) == 2) ? 0 : (*pin_id) + 1;
+
+        if (*pin_id == 0) {
+            microbit_analog_pins[2]->setAnalogValue(0);
+        }
+        else {
+            microbit_analog_pins[(*pin_id) - 1]->setAnalogValue(0);
+        }
+
+        (*pwm_value) = 0;
+    });
+
+    mcp->interruptOnFalling(MCP_GP_UP, [=]() {
+        *pin_id = ((*pin_id) == 0) ? 2 : (*pin_id) - 1;
+
+        if (*pin_id == 2) {
+            microbit_analog_pins[0]->setAnalogValue(0);
+        }
+        else {
+            microbit_analog_pins[(*pin_id) + 1]->setAnalogValue(0);
+        }
+
+        (*pwm_value) = 0;
+    });
+
+    for (int i = 0; i < 19; ++i) {
+        microbit_pins[i]->setDigitalValue(0);
+    }
+
+    fiber_sleep(500);
+
+    for (uint8_t i = 0; i < 3; ++i) {
+        printf("Init PWM pin #%u (result: %d)\n", i, microbit_analog_pins[i]->setAnalogValue(0));
+    }
+
+    while (1) {
+        if (click_button(btnMenu)) {
+            break;
+        }
+
+        if (getCurrentMillis() - start_timeout >= 100) {
+            (*pwm_value) += pwm_step;
+
+            if (*pwm_value >= 1024) {
+                *pwm_value = 0;
+            }
+
+            microbit_analog_pins[*pin_id]->setAnalogValue(*pwm_value);
+
+            ssd->fill(0x00);
+            ssd->drawText("Pin: 0" + to_string(*pin_id), 42, 36, 0xFF);
+            ssd->drawText(string("PWM value:") + ((*pwm_value < 1000) ? "0" : "") + ((*pwm_value < 100) ? "0" : "") +
+                              ((*pwm_value < 10) ? "0" : "") + to_string(*pwm_value),
+                          20, 52, 0xFF);
+            ssd->drawText("Up: Prev. pin", 28, 84, 0xFF);
+            ssd->drawText("Down: Next pin", 24, 97, 0xFF);
+            ssd->show();
+
+            start_timeout = getCurrentMillis();
+        }
+
+        fiber_sleep(1);
+    }
+
+    for (int i = 0; i < 19; ++i) {
+        microbit_pins[i]->setDigitalValue(0);
+    }
+
+    btnA->getDigitalValue();
+    btnB->getDigitalValue();
+}
+
 void show_jacdac()
 {
     uint32_t timeout     = 0;
@@ -986,12 +1163,36 @@ void Demo_main(codal::STM32STEAM32_WB55RG& steam32)
 
     rtc->init();
 
+    microbit_pins[0]  = &steam32.io.PA_2;
+    microbit_pins[1]  = &steam32.io.PC_4;
+    microbit_pins[2]  = &steam32.io.PA_4;
+    microbit_pins[3]  = &steam32.io.PA_7;
+    microbit_pins[4]  = &steam32.io.PC_3;
+    microbit_pins[5]  = &steam32.io.PA_9;
+    microbit_pins[6]  = &steam32.io.PA_5;
+    microbit_pins[7]  = &steam32.io.PA_15;
+    microbit_pins[8]  = &steam32.io.PC_2;
+    microbit_pins[9]  = &steam32.io.PA_6;
+    microbit_pins[10] = &steam32.io.PA_8;
+    microbit_pins[11] = &steam32.io.PC_6;
+    microbit_pins[12] = &steam32.io.PC_5;
+    microbit_pins[13] = &steam32.io.PB_13;
+    microbit_pins[14] = &steam32.io.PB_14;
+    microbit_pins[15] = &steam32.io.PB_15;
+    microbit_pins[16] = &steam32.io.PE_4;
+    microbit_pins[17] = &steam32.io.PC_0;
+    microbit_pins[18] = &steam32.io.PC_1;
+
+    microbit_analog_pins[0] = &steam32.io.PA_9;
+    microbit_analog_pins[1] = &steam32.io.PA_6;
+    microbit_analog_pins[2] = &steam32.io.PA_8;
+
     steam32.sleep(500);
 
     ssd->fill(0x00);
-    ssd->drawText("Hello STeamy !", 20, 60, 0xFF);
+    ssd->drawText("Hello STeaMi !", 20, 60, 0xFF);
     ssd->show();
-    printf("Hello STeamy !\r\n");
+    printf("Hello STeaMi !\r\n");
     steam32.sleep(1500);
 
     vector<MenuEntry> mainMenuEntries = {{"Temp & Hum", []() -> void { show_temp_hum(); }},
@@ -1007,8 +1208,10 @@ void Demo_main(codal::STM32STEAM32_WB55RG& steam32)
                                          {"Screen", []() -> void { show_screen(); }},
                                          {"Battery", []() -> void { show_battery(); }},
                                          {"Pads \"tete\"", []() -> void { show_pads(); }},
-                                         {"(QWIC)", []() -> void { show_qwic(); }},
-                                         {"(jacdac)", []() -> void { show_jacdac(); }}};
+                                         {"Pads micro:bit", []() -> void { show_microbit(); }},
+                                         {"PWM micro:bit", []() -> void { show_pwm_microbit(); }},
+                                         {"jacdac (SWS)", []() -> void { show_jacdac(); }},
+                                         {"(QWIC)", []() -> void { show_qwic(); }}};
     mainMenu                          = new ScreenMenu(*ssd, mainMenuEntries);
 
     while (1) {
