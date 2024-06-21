@@ -68,8 +68,8 @@ STM32RTC* rtc = nullptr;
 
 ScreenMenu* mainMenu = nullptr;
 
-STM32Pin* microbit_pins[19]       = {nullptr};
-STM32Pin* microbit_analog_pins[3] = {nullptr};
+STM32Pin* microbit_pins[19]    = {nullptr};
+STM32Pin* microbit_pwm_pins[3] = {nullptr};
 
 uint16_t rawMicData[AUDIO_BUFFER];
 bool processedMicData = true;
@@ -942,10 +942,10 @@ void show_pwm_microbit()
         *pin_id = ((*pin_id) == 2) ? 0 : (*pin_id) + 1;
 
         if (*pin_id == 0) {
-            microbit_analog_pins[2]->setAnalogValue(0);
+            microbit_pwm_pins[2]->setAnalogValue(0);
         }
         else {
-            microbit_analog_pins[(*pin_id) - 1]->setAnalogValue(0);
+            microbit_pwm_pins[(*pin_id) - 1]->setAnalogValue(0);
         }
 
         (*pwm_value) = 0;
@@ -955,10 +955,10 @@ void show_pwm_microbit()
         *pin_id = ((*pin_id) == 0) ? 2 : (*pin_id) - 1;
 
         if (*pin_id == 2) {
-            microbit_analog_pins[0]->setAnalogValue(0);
+            microbit_pwm_pins[0]->setAnalogValue(0);
         }
         else {
-            microbit_analog_pins[(*pin_id) + 1]->setAnalogValue(0);
+            microbit_pwm_pins[(*pin_id) + 1]->setAnalogValue(0);
         }
 
         (*pwm_value) = 0;
@@ -971,7 +971,7 @@ void show_pwm_microbit()
     fiber_sleep(500);
 
     for (uint8_t i = 0; i < 3; ++i) {
-        printf("Init PWM pin #%u (result: %d)\n", i, microbit_analog_pins[i]->setAnalogValue(0));
+        printf("Init PWM pin #%u (result: %d)\n", i, microbit_pwm_pins[i]->setAnalogValue(0));
     }
 
     while (1) {
@@ -986,7 +986,7 @@ void show_pwm_microbit()
                 *pwm_value = 0;
             }
 
-            microbit_analog_pins[*pin_id]->setAnalogValue(*pwm_value);
+            microbit_pwm_pins[*pin_id]->setAnalogValue(*pwm_value);
 
             ssd->fill(0x00);
             ssd->drawText("Pin: 0" + to_string(*pin_id), 42, 36, 0xFF);
@@ -1009,6 +1009,15 @@ void show_pwm_microbit()
 
     btnA->getDigitalValue();
     btnB->getDigitalValue();
+}
+
+void show_analog_microbit()
+{
+    while (1) {
+        if (click_button(btnMenu)) {
+            break;
+        }
+    }
 }
 
 void show_jacdac()
@@ -1189,9 +1198,9 @@ void Demo_main(codal::STM32STEAM32_WB55RG& steam32)
     microbit_pins[17] = &steam32.io.PC_0;
     microbit_pins[18] = &steam32.io.PC_1;
 
-    microbit_analog_pins[0] = &steam32.io.PA_9;
-    microbit_analog_pins[1] = &steam32.io.PA_6;
-    microbit_analog_pins[2] = &steam32.io.PA_8;
+    microbit_pwm_pins[0] = &steam32.io.PA_9;
+    microbit_pwm_pins[1] = &steam32.io.PA_6;
+    microbit_pwm_pins[2] = &steam32.io.PA_8;
 
     steam32.sleep(500);
 
@@ -1216,6 +1225,7 @@ void Demo_main(codal::STM32STEAM32_WB55RG& steam32)
                                          {"Pads \"tete\"", []() -> void { show_pads(); }},
                                          {"Pads micro:bit", []() -> void { show_microbit(); }},
                                          {"PWM micro:bit", []() -> void { show_pwm_microbit(); }},
+                                         {"Analog micro:bit", []() -> void { show_analog_microbit(); }},
                                          {"jacdac (SWS)", []() -> void { show_jacdac(); }},
                                          {"(QWIC)", []() -> void { show_qwic(); }}};
     mainMenu                          = new ScreenMenu(*ssd, mainMenuEntries);
