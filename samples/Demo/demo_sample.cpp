@@ -68,8 +68,9 @@ STM32RTC* rtc = nullptr;
 
 ScreenMenu* mainMenu = nullptr;
 
-STM32Pin* microbit_pins[19]    = {nullptr};
-STM32Pin* microbit_pwm_pins[3] = {nullptr};
+STM32Pin* microbit_pins[19]           = {nullptr};
+STM32Pin* microbit_pwm_pins[3]        = {nullptr};
+STM32Pin* microbit_analog_pad_pins[3] = {nullptr};
 
 uint16_t rawMicData[AUDIO_BUFFER];
 bool processedMicData = true;
@@ -1013,10 +1014,49 @@ void show_pwm_microbit()
 
 void show_analog_microbit()
 {
+    constexpr uint16_t bar_size = 100 - 14;
+    uint32_t start_timeout      = 0;
+
+    for (uint8_t i = 0; i < 3; i++) {
+        microbit_analog_pad_pins[i]->getAnalogValue();
+    }
+
     while (1) {
         if (click_button(btnMenu)) {
             break;
         }
+
+        if (getCurrentMillis() - start_timeout > 50) {
+            uint16_t height_bar_p0 = (float(microbit_analog_pad_pins[0]->getAnalogValue()) / 1024.0) * bar_size;
+            // uint16_t height_bar_p1 = (float(microbit_analog_pad_pins[1]->getAnalogValue()) / 1024.0) * bar_size;
+            uint16_t height_bar_p2 = (float(microbit_analog_pad_pins[2]->getAnalogValue()) / 1024.0) * bar_size;
+
+            printf("P0 %i/1024 => %f => %u\n", microbit_analog_pad_pins[0]->getAnalogValue(),
+                   (float(microbit_analog_pad_pins[0]->getAnalogValue()) / 1024.0), height_bar_p0);
+            // printf("P1 %i/1024 => %f => %u\n", microbit_analog_pad_pins[0]->getAnalogValue(),
+            //        (float(microbit_analog_pad_pins[1]->getAnalogValue()) / 1024.0), height_bar_p1);
+            printf("P2 %i/1024 => %f => %u\n", microbit_analog_pad_pins[0]->getAnalogValue(),
+                   (float(microbit_analog_pad_pins[2]->getAnalogValue()) / 1024.0), height_bar_p2);
+            printf("\n");
+
+            ssd->fill(0x00);
+            ssd->drawRectangle(30, 14, 40, 100, false, 0xFF);
+            // ssd->drawRectangle(57, 14, 67, 100, false, 0xFF);
+            ssd->drawRectangle(84, 14, 94, 100, false, 0xFF);
+
+            ssd->drawRectangle(30, 100 - height_bar_p0, 40, 100, true, 0xFF);
+            // ssd->drawRectangle(57, 100 - height_bar_p1, 67, 100, true, 0xFF);
+            ssd->drawRectangle(84, 100 - height_bar_p2, 94, 100, true, 0xFF);
+
+            ssd->drawText("P0", 30, 103, 0xFF);
+            // ssd->drawText("P1", 57, 103, 0xFF);
+            ssd->drawText("P2", 84, 103, 0xFF);
+            ssd->show();
+
+            start_timeout = getCurrentMillis();
+        }
+
+        fiber_sleep(1);
     }
 }
 
@@ -1085,6 +1125,7 @@ void show_jacdac()
         fiber_sleep(100);
     }
 }
+
 void show_qwic()
 {
     ssd->fill(0x00);
@@ -1201,6 +1242,10 @@ void Demo_main(codal::STM32STEAM32_WB55RG& steam32)
     microbit_pwm_pins[0] = &steam32.io.PA_9;
     microbit_pwm_pins[1] = &steam32.io.PA_6;
     microbit_pwm_pins[2] = &steam32.io.PA_8;
+
+    microbit_analog_pad_pins[0] = &steam32.io.PC_4;
+    microbit_analog_pad_pins[1] = &steam32.io.PA_5;
+    microbit_analog_pad_pins[2] = &steam32.io.PC_5;
 
     steam32.sleep(500);
 
