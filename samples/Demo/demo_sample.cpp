@@ -38,6 +38,7 @@ constexpr uint8_t MCP_GP_BOTTOM = 5;
 constexpr uint8_t MCP_GP_LEFT   = 6;
 constexpr uint8_t MCP_GP_UP     = 7;
 
+STM32I2C* i2c_qwiic = nullptr;
 STM32SPI* spi       = nullptr;
 STM32Pin* cs        = nullptr;
 STM32Pin* dc        = nullptr;
@@ -1181,13 +1182,26 @@ void show_flash()
 
 void show_qwic()
 {
+    uint32_t timeout_send = 0;
+
     ssd->fill(0x00);
-    ssd->drawText("  Not available...", 5, 60, 0xFF);
+    ssd->drawText("QWIIC", 48, 17, 0xFF);
+    ssd->drawText("Send data 0x55", 21, 53, 0xFF);
+    ssd->drawText("on address 0x96", 18, 64, 0xFF);
+    ssd->drawText("every seconds.", 22, 75, 0xFF);
     ssd->show();
 
     while (1) {
         if (click_button(btnMenu)) {
             break;
+        }
+
+        if (getCurrentMillis() - timeout_send >= 1000) {
+            i2c_qwiic->beginTransmission(0xAA);
+            i2c_qwiic->write(0x96);
+            i2c_qwiic->endTransmission();
+
+            timeout_send = getCurrentMillis();
         }
 
         fiber_sleep(1);
@@ -1196,15 +1210,16 @@ void show_qwic()
 
 void Demo_main(codal::STM32STEAM32_WB55RG& steam32)
 {
-    spi     = &steam32.spi1;
-    cs      = &steam32.io.PD_0;
-    dc      = &steam32.io.PB_4;
-    rst     = &steam32.io.PA_12;
-    ssd     = new SSD1327_SPI(*spi, *cs, *dc, *rst, 128, 128);
-    btnMenu = &steam32.io.PA_0;
-    btnA    = &steam32.io.PA_7;
-    btnB    = &steam32.io.PA_8;
-    buzzer  = &steam32.io.PA_11;
+    i2c_qwiic = &steam32.i2c3;
+    spi       = &steam32.spi1;
+    cs        = &steam32.io.PD_0;
+    dc        = &steam32.io.PB_4;
+    rst       = &steam32.io.PA_12;
+    ssd       = new SSD1327_SPI(*spi, *cs, *dc, *rst, 128, 128);
+    btnMenu   = &steam32.io.PA_0;
+    btnA      = &steam32.io.PA_7;
+    btnB      = &steam32.io.PA_8;
+    buzzer    = &steam32.io.PA_11;
 
     led_red   = &steam32.io.PC_12;
     led_green = &steam32.io.PC_11;
@@ -1327,7 +1342,7 @@ void Demo_main(codal::STM32STEAM32_WB55RG& steam32)
                                          {"Analog micro:bit", []() -> void { show_analog_microbit(); }},
                                          {"jacdac (SWS)", []() -> void { show_jacdac(); }},
                                          {"DapLink Flash", []() -> void { show_flash(); }},
-                                         {"(QWIC)", []() -> void { show_qwic(); }}};
+                                         {"QWIIC", []() -> void { show_qwic(); }}};
     mainMenu                          = new ScreenMenu(*ssd, mainMenuEntries);
 
     while (1) {
