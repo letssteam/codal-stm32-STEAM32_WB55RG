@@ -18,6 +18,7 @@ using namespace std;
 #include "STM32SingleWireSerial.h"
 #include "VL53L1X.h"
 #include "WSEN-PADS.h"
+#include "daplink_flash.h"
 #include "ism330dl.h"
 #include "lis2mdl.h"
 #include "mcp23009-e.h"
@@ -63,6 +64,7 @@ APDS9960* apds = nullptr;
 ISM330DL* ism  = nullptr;
 LIS2MDL* lis   = nullptr;
 STM32SingleWireSerial* jacdac;
+DaplinkFlash* flash;
 
 STM32RTC* rtc = nullptr;
 
@@ -1126,6 +1128,57 @@ void show_jacdac()
     }
 }
 
+void show_flash()
+{
+    uint32_t start_timeout_screen = 0;
+    uint32_t start_timeout_data   = 0;
+    uint16_t angle_offset         = 0;
+    char buffer[32];
+
+    ssd->fill(0x00);
+    ssd->drawText("Log. distance data", 11, 40, 0xFF);
+    ssd->drawText("Unplug & replug", 20, 81, 0xFF);
+    ssd->drawText("the board", 35, 91, 0xFF);
+    ssd->drawText("to get the file", 20, 102, 0xFF);
+
+    ssd->drawArc(62, 63, 10, angle_offset, angle_offset + 90, 0xFF);
+
+    ssd->show();
+
+    flash->clearFlash();
+    fiber_sleep(1000);
+    flash->setFilename("DEMO", "CSV");
+    flash->writeString("time;distance\n");
+
+    while (1) {
+        if (click_button(btnMenu)) {
+            break;
+        }
+
+        if (getCurrentMillis() - start_timeout_data >= 1000) {
+            sprintf(buffer, "%u;%u\n", getCurrentMillis(), tof->getDistance());
+            flash->writeString(buffer);
+
+            start_timeout_data = getCurrentMillis();
+        }
+
+        if (getCurrentMillis() - start_timeout_screen >= 50) {
+            ssd->drawRectangle(51, 52, 73, 73, true, 0x00);
+            ssd->drawArc(62, 63, 10, angle_offset, angle_offset + 90, 0xFF);
+            ssd->show();
+
+            angle_offset += 18;
+
+            if (angle_offset >= 360) {
+                angle_offset = 0;
+            }
+            start_timeout_screen = getCurrentMillis();
+        }
+
+        fiber_sleep(1);
+    }
+}
+
 void show_qwic()
 {
     ssd->fill(0x00);
@@ -1180,6 +1233,7 @@ void Demo_main(codal::STM32STEAM32_WB55RG& steam32)
     sai     = new STM32SAI(&steam32.io.PA_10, &steam32.io.PA_3, GPIO_AF3_SAI1, AUDIO_BUFFER);
     jacdac  = new STM32SingleWireSerial(steam32.io.PB_6);
     rtc     = new STM32RTC();
+    flash   = new DaplinkFlash(steam32.i2c1);
 
     battery->init();
 
@@ -1272,6 +1326,7 @@ void Demo_main(codal::STM32STEAM32_WB55RG& steam32)
                                          {"PWM micro:bit", []() -> void { show_pwm_microbit(); }},
                                          {"Analog micro:bit", []() -> void { show_analog_microbit(); }},
                                          {"jacdac (SWS)", []() -> void { show_jacdac(); }},
+                                         {"DapLink Flash", []() -> void { show_flash(); }},
                                          {"(QWIC)", []() -> void { show_qwic(); }}};
     mainMenu                          = new ScreenMenu(*ssd, mainMenuEntries);
 
