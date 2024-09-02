@@ -41,13 +41,13 @@
     "generate_hex": true,
     "libraries": [
         {
-            "branch": "a2d0f9e078192f8138edc252f949514993bb7fd3",
+            "branch": "b6e8f96f27da10ef3c26e6d16c1706a5b04af548",
             "name": "codal-core",
             "type": "git",
             "url": "https://github.com/letssteam/codal-core.git"
         },
         {
-            "branch": "b503fdc4635904d1f00bcb2a6bdc43dc46331e59",
+            "branch": "0686f11396533389b601bb69f861fab25b8a5b83",
             "name": "codal-stm32",
             "type": "git",
             "url": "https://github.com/letssteam/codal-stm32"
@@ -60,7 +60,7 @@
     "processor": "STM32WB",
     "product_line": "STM32WB55xx",
     "series": "STM32WBxx",
-    "snapshot_version": "v1.0.27",
+    "snapshot_version": "v1.0.28",
     "toolchain": "ARM_GCC",
     "variant": "STM32WBxx/WB55R(C-E-G)V"
 }
