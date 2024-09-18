@@ -66,7 +66,7 @@ int STM32STEAM32_WB55RG::init()
     return DEVICE_OK;
 }
 
-WEAK int __io_putchar(int ch);
+extern "C" int __io_putchar(int ch);
 
 void STM32STEAM32_WB55RG_dmesg_flush()
 {
