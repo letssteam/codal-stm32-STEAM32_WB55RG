@@ -29,6 +29,10 @@
 #include "DapLink_Flash_sample.h"
 #elif defined(DEMO)
 #include "demo_sample.h"
+#elif defined(FUS_WS_OPERATOR)
+#include "FUS_WS_Operator.h"
+#elif defined(BLE_BROADCAST)
+#include "BLE_Broadcast_Sample.h"
 #else
 #include "BlinkSample.h"
 #endif
