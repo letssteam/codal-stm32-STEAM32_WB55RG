@@ -33,6 +33,8 @@
 #include "FUS_WS_Operator.h"
 #elif defined(BLE_BROADCAST)
 #include "BLE_Broadcast_Sample.h"
+#elif defined(OOB)
+#include "oob.h"
 #else
 #include "BlinkSample.h"
 #endif
