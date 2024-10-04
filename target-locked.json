@@ -5,6 +5,7 @@
     "c_flags": "-O0 -ggdb3 -std=c2x --specs=nano.specs -Warray-bounds -u _printf_float -Wno-format",
     "cmake_definitions": {},
     "config": {
+        "ARDUINO_STEAM32_WB55RG": 1,
         "BOARD_NAME": "\"STEAM32_WB55RG\"",
         "CODAL_DEBUG": "CODAL_DEBUG_DISABLED",
         "CODAL_PROVIDE_PRINTF": 1,
@@ -45,7 +46,7 @@
             "url": "https://github.com/letssteam/codal-core.git"
         },
         {
-            "branch": "5d16809f870d6265891b0c9026a539f68850a1eb",
+            "branch": "953aa44cf9f8a8b94534e466ae6c4b28295be156",
             "name": "codal-stm32",
             "type": "git",
             "url": "https://github.com/letssteam/codal-stm32"
@@ -57,7 +58,7 @@
     "processor": "STM32WB",
     "product_line": "STM32WB55xx",
     "series": "STM32WBxx",
-    "snapshot_version": "v1.0.31",
+    "snapshot_version": "v1.0.32",
     "toolchain": "ARM_GCC",
     "variant": "STM32WBxx/WB55R(C-E-G)V"
 }
