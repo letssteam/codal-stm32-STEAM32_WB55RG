@@ -36,7 +36,7 @@
     "PERIPHERAL_PINS": "PeripheralPins_STEAM32_WB55RG",
     "VARIANT": "variant_STEAM32_WB55RG",
     "VARIANT_H": "\"variant_STEAM32_WB55RG.h\"",
-    "STEAM32_WB55RG": 1,
+    "ARDUINO_STEAM32_WB55RG": 1,
     "HAL_UART_MODULE_ENABLED": 1
   },
   "definitions": "-DSTM32WBxx -DSTM32WB55xx -DCUSTOM_PERIPHERAL_PINS -include codal-stm32-STEAM32_WB55RG/inc/localconf.h -DI2C_IRQ_PRIO=0",

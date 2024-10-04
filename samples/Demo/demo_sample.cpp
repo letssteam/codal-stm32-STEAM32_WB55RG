@@ -1208,7 +1208,7 @@ void show_qwic()
     }
 }
 
-void Demo_main(codal::STM32STEAM32_WB55RG& steam32)
+void Demo_main(codal::STEAM32_WB55RG& steam32)
 {
     i2c_qwiic = &steam32.i2c3;
     spi       = &steam32.spi1;

@@ -9,7 +9,7 @@
 #include "STM32Serial.h"
 #include "ble_utils.h"
 
-void BLE_Broadcast_Sample_main(codal::STM32STEAM32_WB55RG& steam32)
+void BLE_Broadcast_Sample_main(codal::STEAM32_WB55RG& steam32)
 {
     steam32.serial.init(115200);
 

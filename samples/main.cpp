@@ -1,5 +1,5 @@
 #include "CodalFiber.h"
-#include "STM32STEAM32_WB55RG.h"
+#include "STEAM32_WB55RG.h"
 
 #if defined(BUTTONS_SAMPLE)
 #include "ButtonSample.h"
@@ -37,7 +37,7 @@
 #include "BlinkSample.h"
 #endif
 
-codal::STM32STEAM32_WB55RG steam32;
+codal::STEAM32_WB55RG steam32;
 
 auto main() -> int
 {

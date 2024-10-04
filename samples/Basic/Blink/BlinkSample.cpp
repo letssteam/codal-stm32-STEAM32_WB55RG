@@ -3,7 +3,7 @@
 using namespace std;
 using namespace codal;
 
-void BlinkSample_main(codal::STM32STEAM32_WB55RG& steam32)
+void BlinkSample_main(codal::STEAM32_WB55RG& steam32)
 {
     bool state = false;
 

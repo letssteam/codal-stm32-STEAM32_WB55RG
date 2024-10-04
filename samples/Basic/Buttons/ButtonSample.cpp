@@ -3,7 +3,7 @@
 using namespace std;
 using namespace codal;
 
-void ButtonSample_main(codal::STM32STEAM32_WB55RG& steam32)
+void ButtonSample_main(codal::STEAM32_WB55RG& steam32)
 {
     STM32Pin& led_red   = steam32.io.PC_12;
     STM32Pin& led_green = steam32.io.PC_11;

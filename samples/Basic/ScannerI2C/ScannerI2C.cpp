@@ -3,7 +3,7 @@
 
 #include <cstdio>
 
-void ScannerI2C(codal::STM32STEAM32_WB55RG& steam32)
+void ScannerI2C(codal::STEAM32_WB55RG& steam32)
 {
     steam32.serial.init(115200);
 

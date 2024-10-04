@@ -4,7 +4,7 @@
 
 #include "STM32Serial.h"
 
-void SerialSample_main(codal::STM32STEAM32_WB55RG& steam32)
+void SerialSample_main(codal::STEAM32_WB55RG& steam32)
 {
     steam32.serial.init(115200);
 

@@ -5,7 +5,7 @@
 
 #include "BQ27441.h"
 
-void BQ27441_SampleMain(codal::STM32STEAM32_WB55RG& steam32)
+void BQ27441_SampleMain(codal::STEAM32_WB55RG& steam32)
 {
     steam32.serial.init(115200);
     steam32.sleep(2000);

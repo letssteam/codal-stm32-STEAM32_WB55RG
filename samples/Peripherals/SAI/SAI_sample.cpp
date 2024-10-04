@@ -46,7 +46,7 @@ void onError(const uint32_t errCode)
     printf("An error occured: %08X (%d)\r\n", errCode, errCode);
 }
 
-void SAI_main(STM32STEAM32_WB55RG& steam32)
+void SAI_main(STEAM32_WB55RG& steam32)
 {
     bool is_paused = false;
 

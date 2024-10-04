@@ -27,7 +27,6 @@
         "PERIPHERAL_PINS": "PeripheralPins_STEAM32_WB55RG",
         "PROCESSOR_WORD_TYPE": "uintptr_t",
         "SCHEDULER_TICK_PERIOD_US": 1000,
-        "STEAM32_WB55RG": 1,
         "USE_ACCEL_LSB": 0,
         "VARIANT": "variant_STEAM32_WB55RG",
         "VARIANT_H": "\"variant_STEAM32_WB55RG.h\""

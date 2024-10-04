@@ -34,7 +34,7 @@ bool click_button(codal::STM32Pin& btn)
     return false;
 }
 
-void FUS_WS_Operator(STM32STEAM32_WB55RG& steam32)
+void FUS_WS_Operator(STEAM32_WB55RG& steam32)
 {
     // Start CRC clock for FUS
     __HAL_RCC_CRC_CLK_ENABLE();

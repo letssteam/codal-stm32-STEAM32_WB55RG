@@ -6,7 +6,7 @@
 #include "APDS9960.h"
 #include "ssd1327.h"
 
-void APDS9960_SampleMain(codal::STM32STEAM32_WB55RG& steam32)
+void APDS9960_SampleMain(codal::STEAM32_WB55RG& steam32)
 {
     steam32.serial.init(115200);
 

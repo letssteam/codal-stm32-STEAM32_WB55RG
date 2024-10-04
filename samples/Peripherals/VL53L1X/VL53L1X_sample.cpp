@@ -4,7 +4,7 @@
 #include <cstdio>
 #include <string>
 
-void vlx53l1xSample(codal::STM32STEAM32_WB55RG& steam32)
+void vlx53l1xSample(codal::STEAM32_WB55RG& steam32)
 {
     steam32.serial.init(115200);
 

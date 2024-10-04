@@ -3,7 +3,7 @@
 
 #include <string>
 
-void hts221Sample(codal::STM32STEAM32_WB55RG& steam32)
+void hts221Sample(codal::STEAM32_WB55RG& steam32)
 {
     steam32.serial.init(115200);
 

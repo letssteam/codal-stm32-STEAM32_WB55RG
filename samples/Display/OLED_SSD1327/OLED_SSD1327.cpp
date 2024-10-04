@@ -445,7 +445,7 @@ uint8_t pic[128][64] = {
 #include "VL53L1X.h"
 #include "WSEN-PADS.h"
 
-void OledSample1327_main(codal::STM32STEAM32_WB55RG& steam32)
+void OledSample1327_main(codal::STEAM32_WB55RG& steam32)
 {
     STM32SPI& spi = steam32.spi1;
     STM32Pin& cs  = steam32.io.PD_0;

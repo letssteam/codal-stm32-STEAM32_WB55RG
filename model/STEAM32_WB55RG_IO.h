@@ -1,5 +1,4 @@
-#ifndef STM32_IOT_NODE_IO_H
-#define STM32_IOT_NODE_IO_H
+#pragma once
 
 #include "STM32Pin.h"
 //
@@ -76,12 +75,12 @@ namespace codal {
 /**
  * Represents a collection of all I/O pins exposed by the device.
  */
-class STM32STEAM32_WB55RG_IO {
+class STEAM32_WB55RG_IO {
   public:
     /**
      * Constructor.
      */
-    STM32STEAM32_WB55RG_IO();
+    STEAM32_WB55RG_IO();
 
     STM32Pin PA_0;
     STM32Pin PA_1;
@@ -130,5 +129,3 @@ class STM32STEAM32_WB55RG_IO {
     STM32Pin NC;
 };
 }  // namespace codal
-
-#endif

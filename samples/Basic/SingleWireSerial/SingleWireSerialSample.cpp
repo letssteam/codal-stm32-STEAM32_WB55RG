@@ -14,7 +14,7 @@ void set_serial_mode(codal::STM32SingleWireSerial& sws, bool is_tx)
     }
 }
 
-void SingleSerialSerialSample_main(codal::STM32STEAM32_WB55RG& steam32)
+void SingleSerialSerialSample_main(codal::STEAM32_WB55RG& steam32)
 {
     bool is_sserial_tx = false;
     codal::STM32SingleWireSerial sserial(steam32.io.PB_6);

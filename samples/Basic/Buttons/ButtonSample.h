@@ -1,4 +1,4 @@
-#include "STM32STEAM32_WB55RG.h"
+#include "STEAM32_WB55RG.h"
 
 #ifndef BUTTON_SAMPLE_H
 #define BUTTON_SAMPLE_H
@@ -7,6 +7,6 @@
 #define SAMPLE_MAIN ButtonSample_main
 #endif
 
-void ButtonSample_main(codal::STM32STEAM32_WB55RG& steam32);
+void ButtonSample_main(codal::STEAM32_WB55RG& steam32);
 
 #endif

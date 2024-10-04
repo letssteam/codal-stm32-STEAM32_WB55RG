@@ -1,10 +1,8 @@
-#include "STM32STEAM32_WB55RG.h"
+#include "STEAM32_WB55RG.h"
 
 using namespace codal;
 
-void STM32PNUCLEO_WB55RG_dmesg_flush();
-
-STM32STEAM32_WB55RG* codal::default_device_instance = nullptr;
+STEAM32_WB55RG* codal::default_device_instance = nullptr;
 
 /**
  * Constructor.
@@ -12,7 +10,7 @@ STM32STEAM32_WB55RG* codal::default_device_instance = nullptr;
  * Create a representation of a device, which includes member variables
  * that represent various device drivers used to control aspects of the STM32 IOT node.
  */
-STM32STEAM32_WB55RG::STM32STEAM32_WB55RG()
+STEAM32_WB55RG::STEAM32_WB55RG()
     : lowLevelTimer(TIM2, TIM2_IRQn),
       timer(lowLevelTimer),
       io(),
@@ -37,20 +35,20 @@ STM32STEAM32_WB55RG::STM32STEAM32_WB55RG()
  * static context i.e. in a constructor.
  *
  * @code
- * STM32STEAM32_WB55RG.init();
+ * STEAM32_WB55RG.init();
  * @endcode
  *
  * @note This method must be called before user code utilises any functionality
- *       contained within the STM32STEAM32_WB55RG class.
+ *       contained within the STEAM32_WB55RG class.
  */
-int STM32STEAM32_WB55RG::init()
+int STEAM32_WB55RG::init()
 {
     if ((status & DEVICE_INITIALIZED) != 0) {
         return DEVICE_NOT_SUPPORTED;
     }
     status |= DEVICE_INITIALIZED;
 
-    // codal_dmesg_set_flush_fn(STM32STEAM32_WB55RG_dmesg_flush);
+    // codal_dmesg_set_flush_fn(STEAM32_WB55RG_dmesg_flush);
 
     // Bring up fiber scheduler.
     scheduler_init(messageBus);
@@ -68,7 +66,7 @@ int STM32STEAM32_WB55RG::init()
 
 extern "C" int __io_putchar(int ch);
 
-void STM32STEAM32_WB55RG_dmesg_flush()
+void STEAM32_WB55RG_dmesg_flush()
 {
 #if CONFIG_ENABLED(DMESG_SERIAL_DEBUG)
 #if DEVICE_DMESG_BUFFER_SIZE > 0

@@ -14,7 +14,7 @@ constexpr uint8_t FLASH_READ_ERROR_REG  = 0x81;
 
 bool state_led = false;
 
-void DAPLINK_FLASH_Sample(codal::STM32STEAM32_WB55RG& steam32)
+void DAPLINK_FLASH_Sample(codal::STEAM32_WB55RG& steam32)
 {
     steam32.init();
     steam32.serial.init(115200);

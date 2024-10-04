@@ -1,5 +1,4 @@
-#ifndef STM32PNUCLEO_WB55RG_H
-#define STM32PNUCLEO_WB55RG_H
+#pragma once
 
 #include "Button.h"
 #include "CodalComponent.h"
@@ -9,10 +8,10 @@
 #include "Event.h"
 #include "MessageBus.h"
 #include "NotifyEvents.h"
+#include "STEAM32_WB55RG_IO.h"
 #include "STM32I2C.h"
 #include "STM32LowLevelTimer.h"
 #include "STM32SPI.h"
-#include "STM32STEAM32_WB55RG_IO.h"
 #include "STM32Serial.h"
 #include "Timer.h"
 #include "stm32_def.h"
@@ -27,12 +26,12 @@
  * used to control aspects of the STM32 IOT node.
  */
 namespace codal {
-class STM32STEAM32_WB55RG : public CodalComponent {
+class STEAM32_WB55RG : public CodalComponent {
   public:
     STM32LowLevelTimer lowLevelTimer;
     Timer timer;
     MessageBus messageBus;
-    STM32STEAM32_WB55RG_IO io;
+    STEAM32_WB55RG_IO io;
 
     STM32Serial serial;
     STM32I2C i2c1;
@@ -44,7 +43,7 @@ class STM32STEAM32_WB55RG : public CodalComponent {
     /**
      * Constructor.
      */
-    STM32STEAM32_WB55RG();
+    STEAM32_WB55RG();
 
     /**
      * Post constructor initialisation method.
@@ -89,6 +88,5 @@ class STM32STEAM32_WB55RG : public CodalComponent {
     CODAL_TIMESTAMP systemTime() { return system_timer_current_time(); }
 };
 
-extern STM32STEAM32_WB55RG* default_device_instance;
+extern STEAM32_WB55RG* default_device_instance;
 }  // namespace codal
-#endif

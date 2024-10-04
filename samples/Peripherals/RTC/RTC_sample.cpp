@@ -32,7 +32,7 @@ const char* weekdayToStr(uint8_t wd)
     }
 }
 
-void RTC_main(STM32STEAM32_WB55RG& steam32)
+void RTC_main(STEAM32_WB55RG& steam32)
 {
     auto rtc     = STM32RTC();
     auto& serial = steam32.serial;
