@@ -1,4 +1,4 @@
-#include "STEAM32_WB55RG.h"
+#include "STeaMi.h"
 
 #ifndef BLINK_SAMPLE_H
 #define BLINK_SAMPLE_H
@@ -7,6 +7,6 @@
 #define SAMPLE_MAIN BlinkSample_main
 #endif
 
-void BlinkSample_main(codal::STEAM32_WB55RG& steam32);
+void BlinkSample_main(codal::STeaMi& steami);
 
 #endif

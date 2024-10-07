@@ -14,13 +14,13 @@ void set_serial_mode(codal::STM32SingleWireSerial& sws, bool is_tx)
     }
 }
 
-void SingleSerialSerialSample_main(codal::STEAM32_WB55RG& steam32)
+void SingleSerialSerialSample_main(codal::STeaMi& steami)
 {
     bool is_sserial_tx = false;
-    codal::STM32SingleWireSerial sserial(steam32.io.PB_6);
+    codal::STM32SingleWireSerial sserial(steami.io.jacdacTx);
     unsigned tx_counter = 0;
 
-    steam32.serial.init(115200);
+    steami.serial.init(115200);
     sserial.init(115200);
 
     printf("\r\n");
@@ -31,8 +31,8 @@ void SingleSerialSerialSample_main(codal::STEAM32_WB55RG& steam32)
     set_serial_mode(sserial, is_sserial_tx);
 
     while (true) {
-        if (steam32.serial.isReadable() != 0) {
-            switch (char(steam32.serial.getChar(codal::ASYNC))) {
+        if (steami.serial.isReadable() != 0) {
+            switch (char(steami.serial.getChar(codal::ASYNC))) {
                 case 'T':
                 case 't':
                     is_sserial_tx = true;
@@ -58,7 +58,7 @@ void SingleSerialSerialSample_main(codal::STEAM32_WB55RG& steam32)
 
             int res = sserial.putc(char(0x30 + tx_counter));
             printf("Send data: '%c' (byte send: %d)\n", char(0x30 + tx_counter), res);
-            steam32.sleep(1000);
+            steami.sleep(1000);
             tx_counter++;
         }
         else {

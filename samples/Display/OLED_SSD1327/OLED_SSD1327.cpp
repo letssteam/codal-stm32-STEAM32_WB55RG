@@ -445,23 +445,23 @@ uint8_t pic[128][64] = {
 #include "VL53L1X.h"
 #include "WSEN-PADS.h"
 
-void OledSample1327_main(codal::STEAM32_WB55RG& steam32)
+void OledSample1327_main(codal::STeaMi& steami)
 {
-    STM32SPI& spi = steam32.spi1;
-    STM32Pin& cs  = steam32.io.PD_0;
-    STM32Pin& dc  = steam32.io.PB_4;
-    STM32Pin& rst = steam32.io.PA_12;
+    STM32SPI& spi = steami.spiInt;
+    STM32Pin& cs  = steami.io.csDisplay;
+    STM32Pin& dc  = steami.io.misoDisplay;
+    STM32Pin& rst = steami.io.resetDisplay;
 
-    codal::VL53L1X vl53l1x(&steam32.i2c1);
+    codal::VL53L1X vl53l1x(&steami.i2cInt);
     vl53l1x.init();
 
-    codal::HTS221 hts221(&steam32.i2c1, 0xBE);
+    codal::HTS221 hts221(&steami.i2cInt, 0xBE);
     hts221.init();
 
-    codal::WSEN_PADS press(steam32.i2c1, 0xBA);
+    codal::WSEN_PADS press(steami.i2cInt, 0xBA);
     press.init();
 
-    codal::APDS9960 apds(steam32.i2c1, 0x72);
+    codal::APDS9960 apds(steami.i2cInt, 0x72);
     apds.init();
 
     hts221.setOutputRate(codal::HTS221_OUTPUT_RATE::RATE_7HZ);
@@ -471,9 +471,9 @@ void OledSample1327_main(codal::STEAM32_WB55RG& steam32)
 
     uint8_t state = 0;
 
-    STM32Pin& ledR = steam32.io.PC_12;
-    STM32Pin& ledG = steam32.io.PC_11;
-    STM32Pin& ledB = steam32.io.PC_10;
+    STM32Pin& ledR = steami.io.ledRed;
+    STM32Pin& ledG = steami.io.ledGreen;
+    STM32Pin& ledB = steami.io.ledBlue;
 
     ledR.setDigitalValue(0);
     ledG.setDigitalValue(0);
@@ -485,7 +485,7 @@ void OledSample1327_main(codal::STEAM32_WB55RG& steam32)
                 ssd.setData(pic[0], 128 * 64);
                 ssd.show();
 
-                steam32.sleep(3000);
+                steami.sleep(3000);
                 state++;
                 break;
 
@@ -496,7 +496,7 @@ void OledSample1327_main(codal::STEAM32_WB55RG& steam32)
                     ssd.drawText(std::to_string(vl53l1x.getDistance()), 30, 40, 0x03);
                     ssd.show();
 
-                    steam32.sleep(20);
+                    steami.sleep(20);
                 }
                 state++;
                 break;
@@ -510,7 +510,7 @@ void OledSample1327_main(codal::STEAM32_WB55RG& steam32)
                     ssd.drawText(std::to_string(hts221.getHumidity()), 30, 70, 0x03);
                     ssd.show();
 
-                    steam32.sleep(20);
+                    steami.sleep(20);
                 }
                 state++;
                 break;
@@ -522,7 +522,7 @@ void OledSample1327_main(codal::STEAM32_WB55RG& steam32)
                     ssd.drawText(std::to_string(press.getPressure()), 30, 40, 0x03);
                     ssd.show();
 
-                    steam32.sleep(20);
+                    steami.sleep(20);
                 }
                 state++;
                 break;
@@ -540,7 +540,7 @@ void OledSample1327_main(codal::STEAM32_WB55RG& steam32)
                     ssd.drawText("Clear: " + std::to_string(rgbc[3]), 20, 90, 0xff);
                     ssd.show();
 
-                    steam32.sleep(20);
+                    steami.sleep(20);
                 }
                 state++;
                 break;
@@ -553,43 +553,43 @@ void OledSample1327_main(codal::STEAM32_WB55RG& steam32)
                     ledG.setDigitalValue(0);
                     ledB.setDigitalValue(0);
 
-                    steam32.sleep(100);
+                    steami.sleep(100);
 
                     ledR.setDigitalValue(0);
                     ledG.setDigitalValue(1);
                     ledB.setDigitalValue(0);
 
-                    steam32.sleep(100);
+                    steami.sleep(100);
 
                     ledR.setDigitalValue(0);
                     ledG.setDigitalValue(0);
                     ledB.setDigitalValue(1);
 
-                    steam32.sleep(100);
+                    steami.sleep(100);
 
                     ledR.setDigitalValue(1);
                     ledG.setDigitalValue(1);
                     ledB.setDigitalValue(0);
 
-                    steam32.sleep(100);
+                    steami.sleep(100);
 
                     ledR.setDigitalValue(1);
                     ledG.setDigitalValue(0);
                     ledB.setDigitalValue(1);
 
-                    steam32.sleep(100);
+                    steami.sleep(100);
 
                     ledR.setDigitalValue(0);
                     ledG.setDigitalValue(1);
                     ledB.setDigitalValue(1);
 
-                    steam32.sleep(100);
+                    steami.sleep(100);
 
                     ledR.setDigitalValue(1);
                     ledG.setDigitalValue(1);
                     ledB.setDigitalValue(1);
 
-                    steam32.sleep(100);
+                    steami.sleep(100);
                 }
 
                 ledR.setDigitalValue(0);

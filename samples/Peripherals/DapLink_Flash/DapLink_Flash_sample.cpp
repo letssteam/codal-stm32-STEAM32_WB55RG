@@ -14,28 +14,28 @@ constexpr uint8_t FLASH_READ_ERROR_REG  = 0x81;
 
 bool state_led = false;
 
-void DAPLINK_FLASH_Sample(codal::STEAM32_WB55RG& steam32)
+void DAPLINK_FLASH_Sample(codal::STeaMi& steami)
 {
-    steam32.init();
-    steam32.serial.init(115200);
+    steami.init();
+    steami.serial.init(115200);
 
-    steam32.io.PA_11.setDigitalValue(0);  // Force HP low state...
+    steami.io.speaker.setDigitalValue(0);  // Force HP low state...
 
-    auto i2c = steam32.i2c1;
+    auto i2c = steami.i2cInt;
 
     printf("Ready !\r\n");
     codal::fiber_sleep(1000);
 
     char c;
     while (1) {
-        steam32.sleep(100);
+        steami.sleep(100);
 
-        c = static_cast<char>(steam32.serial.getChar(codal::ASYNC));
+        c = static_cast<char>(steami.serial.getChar(codal::ASYNC));
 
-        if ((steam32.serial.getChar(codal::ASYNC) != DEVICE_NO_DATA)) {
+        if ((steami.serial.getChar(codal::ASYNC) != DEVICE_NO_DATA)) {
             // flush rx buffer
             target_wait(10);
-            while (steam32.serial.getChar(codal::ASYNC) != DEVICE_NO_DATA) target_wait(10);
+            while (steami.serial.getChar(codal::ASYNC) != DEVICE_NO_DATA) target_wait(10);
 
             if (c < 0x20) continue;
 
@@ -44,7 +44,7 @@ void DAPLINK_FLASH_Sample(codal::STEAM32_WB55RG& steam32)
             switch ((char)toupper(c)) {
                 case 'A': {
                     printf("Data to append (max 256 char): \n");
-                    codal::ManagedString str = steam32.serial.readUntil('\n', codal::SYNC_SPINWAIT);
+                    codal::ManagedString str = steami.serial.readUntil('\n', codal::SYNC_SPINWAIT);
 
                     i2c.beginTransmission(ADDRESS);
                     i2c.write(FLASH_APPEND_FILE);
@@ -89,7 +89,7 @@ void DAPLINK_FLASH_Sample(codal::STEAM32_WB55RG& steam32)
                     printf(
                         "Set the filename (format: FFFFFFFFEEE (F: filename, E: ext) use ' ' (space) to fill unsused \
                         characters)): \n");
-                    codal::ManagedString str = steam32.serial.readUntil('\n', codal::SYNC_SPINWAIT);
+                    codal::ManagedString str = steami.serial.readUntil('\n', codal::SYNC_SPINWAIT);
 
                     printf("--- filename: (size: %d) '%s' ", str.length(), str.toCharArray());
 
@@ -155,7 +155,7 @@ void DAPLINK_FLASH_Sample(codal::STEAM32_WB55RG& steam32)
                             success++;
                         }
 
-                        steam32.sleep(10);
+                        steami.sleep(10);
                     }
 
                     printf("Test done (success: %d/%d (%d %%) -- failure: %d/%d (%d %%)\n", success, total,

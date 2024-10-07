@@ -2,23 +2,23 @@
 
 #include <string>
 
-void Wsen_PadsSample(codal::STEAM32_WB55RG& steam32)
+void Wsen_PadsSample(codal::STeaMi& steami)
 {
-    steam32.serial.init(115200);
+    steami.serial.init(115200);
 
     printf("\r\n");
     printf("*******************************************\r\n");
     printf("*        Demonstration du WSEN_PADS       *\r\n");
     printf("*******************************************\r\n");
 
-    codal::WSEN_PADS press(steam32.i2c1, 0xBA);
+    codal::WSEN_PADS press(steami.i2cInt, 0xBA);
     press.init();
 
-    steam32.sleep(2000);
+    steami.sleep(2000);
 
     printf("Device ID : %X\r\n", press.whoAmI());
 
-    steam32.sleep(2000);
+    steami.sleep(2000);
 
     std::string pressure;
     std::string temperature;
@@ -27,7 +27,7 @@ void Wsen_PadsSample(codal::STEAM32_WB55RG& steam32)
 
     while (true) {
         state = !state;
-        steam32.io.PC_10.setDigitalValue(state ? 1 : 0);
+        steami.io.ledGreen.setDigitalValue(state ? 1 : 0);
 
         pressure    = "Pressure : " + std::to_string(press.getPressure()) + " kPa";
         temperature = "Temperature : " + std::to_string(press.getTemperature()) + " C";
@@ -36,6 +36,6 @@ void Wsen_PadsSample(codal::STEAM32_WB55RG& steam32)
         printf("%s \r\n", temperature.c_str());
         printf("\r\n");
 
-        steam32.sleep(1000);
+        steami.sleep(1000);
     }
 }

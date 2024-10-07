@@ -46,16 +46,16 @@ void onError(const uint32_t errCode)
     printf("An error occured: %08X (%d)\r\n", errCode, errCode);
 }
 
-void SAI_main(STEAM32_WB55RG& steam32)
+void SAI_main(STeaMi& steami)
 {
     bool is_paused = false;
 
-    steam32.serial.init(115200);
-    steam32.sleep(500);
+    steami.serial.init(115200);
+    steami.sleep(500);
 
     printf("Init\r\n");
-    sai  = new STM32SAI(&steam32.io.PA_10, &steam32.io.PA_3, GPIO_AF3_SAI1, AUDIO_BUFFER);
-    btnA = &steam32.io.PA_7;
+    sai  = new STM32SAI(&steami.io.microphone, &steami.io.runmic, GPIO_AF3_SAI1, AUDIO_BUFFER);
+    btnA = &steami.io.buttonA;
 
     if (!sai->init()) {
         printf("Failed to init SAI\r\n");

@@ -9,9 +9,9 @@
 #include "STM32Serial.h"
 #include "ble_utils.h"
 
-void BLE_Broadcast_Sample_main(codal::STEAM32_WB55RG& steam32)
+void BLE_Broadcast_Sample_main(codal::STeaMi& steami)
 {
-    steam32.serial.init(115200);
+    steami.serial.init(115200);
 
     printf("\r\n");
     printf("*******************************************\r\n");
@@ -42,7 +42,7 @@ void BLE_Broadcast_Sample_main(codal::STEAM32_WB55RG& steam32)
     }
 
     while (1) {
-        steam32.sleep(1000);
+        steami.sleep(1000);
 
         adv.setUserData(std::to_string(getCurrentMillis() / 1000) + " sec");
         ble.setAdvertisingData(adv);

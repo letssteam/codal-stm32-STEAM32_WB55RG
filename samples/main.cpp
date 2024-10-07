@@ -1,5 +1,5 @@
 #include "CodalFiber.h"
-#include "STEAM32_WB55RG.h"
+#include "STeaMi.h"
 
 #if defined(BUTTONS_SAMPLE)
 #include "ButtonSample.h"
@@ -37,12 +37,12 @@
 #include "BlinkSample.h"
 #endif
 
-codal::STEAM32_WB55RG steam32;
+codal::STeaMi steami;
 
 auto main() -> int
 {
-    steam32.init();
-    SAMPLE_MAIN(steam32);
+    steami.init();
+    SAMPLE_MAIN(steami);
     codal::release_fiber();
     return 0;
 }

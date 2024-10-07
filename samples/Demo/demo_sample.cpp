@@ -1208,27 +1208,27 @@ void show_qwic()
     }
 }
 
-void Demo_main(codal::STEAM32_WB55RG& steam32)
+void Demo_main(codal::STeaMi& steami)
 {
-    i2c_qwiic = &steam32.i2c3;
-    spi       = &steam32.spi1;
-    cs        = &steam32.io.PD_0;
-    dc        = &steam32.io.PB_4;
-    rst       = &steam32.io.PA_12;
+    i2c_qwiic = &steami.i2cExt;
+    spi       = &steami.spiInt;
+    cs        = &steami.io.csDisplay;
+    dc        = &steami.io.misoDisplay;
+    rst       = &steami.io.resetDisplay;
     ssd       = new SSD1327_SPI(*spi, *cs, *dc, *rst, 128, 128);
-    btnMenu   = &steam32.io.PA_0;
-    btnA      = &steam32.io.PA_7;
-    btnB      = &steam32.io.PA_8;
-    buzzer    = &steam32.io.PA_11;
+    btnMenu   = &steami.io.buttonMenu;
+    btnA      = &steami.io.buttonA;
+    btnB      = &steami.io.buttonB;
+    buzzer    = &steami.io.speaker;
 
-    led_red   = &steam32.io.PC_12;
-    led_green = &steam32.io.PC_11;
-    led_blue  = &steam32.io.PC_10;
+    led_red   = &steami.io.ledRed;
+    led_green = &steami.io.ledGreen;
+    led_blue  = &steami.io.ledBlue;
 
     buzzer->setAnalogValue(0);
 
-    steam32.serial.init(115200);
-    steam32.sleep(500);
+    steami.serial.init(115200);
+    steami.sleep(500);
 
     printf("Init peripherals !\r\n");
 
@@ -1237,18 +1237,18 @@ void Demo_main(codal::STEAM32_WB55RG& steam32)
     ssd->drawText("Initialization...", 15, 60, 0xFF);
     ssd->show();
 
-    battery = new BQ27441(&steam32.i2c1);
-    mcp     = new MCP23009E(steam32.i2c1, 0x40, steam32.io.PB_1, steam32.io.PB_0);
-    hts     = new HTS221(&steam32.i2c1, 0xBE);
-    pres    = new WSEN_PADS(steam32.i2c1, 0xBA);
-    apds    = new APDS9960(steam32.i2c1, 0x72);
-    tof     = new VL53L1X(&steam32.i2c1);
-    ism     = new ISM330DL(&steam32.i2c1);
-    lis     = new LIS2MDL(&steam32.i2c1);
-    sai     = new STM32SAI(&steam32.io.PA_10, &steam32.io.PA_3, GPIO_AF3_SAI1, AUDIO_BUFFER);
-    jacdac  = new STM32SingleWireSerial(steam32.io.PB_6);
+    battery = new BQ27441(&steami.i2cInt);
+    mcp     = new MCP23009E(steami.i2cInt, 0x40, steami.io.resetExpander, steami.io.irqExpander);
+    hts     = new HTS221(&steami.i2cInt, 0xBE);
+    pres    = new WSEN_PADS(steami.i2cInt, 0xBA);
+    apds    = new APDS9960(steami.i2cInt, 0x72);
+    tof     = new VL53L1X(&steami.i2cInt);
+    ism     = new ISM330DL(&steami.i2cInt);
+    lis     = new LIS2MDL(&steami.i2cInt);
+    sai     = new STM32SAI(&steami.io.microphone, &steami.io.runmic, GPIO_AF3_SAI1, AUDIO_BUFFER);
+    jacdac  = new STM32SingleWireSerial(steami.io.jacdacTx);
     rtc     = new STM32RTC();
-    flash   = new DaplinkFlash(steam32.i2c1);
+    flash   = new DaplinkFlash(steami.i2cInt);
 
     battery->init();
 
@@ -1288,41 +1288,41 @@ void Demo_main(codal::STEAM32_WB55RG& steam32)
 
     rtc->init();
 
-    microbit_pins[0]  = &steam32.io.PA_2;
-    microbit_pins[1]  = &steam32.io.PC_4;
-    microbit_pins[2]  = &steam32.io.PA_4;
-    microbit_pins[3]  = &steam32.io.PA_7;
-    microbit_pins[4]  = &steam32.io.PC_3;
-    microbit_pins[5]  = &steam32.io.PA_9;
-    microbit_pins[6]  = &steam32.io.PA_5;
-    microbit_pins[7]  = &steam32.io.PA_15;
-    microbit_pins[8]  = &steam32.io.PC_2;
-    microbit_pins[9]  = &steam32.io.PA_6;
-    microbit_pins[10] = &steam32.io.PA_8;
-    microbit_pins[11] = &steam32.io.PC_6;
-    microbit_pins[12] = &steam32.io.PC_5;
-    microbit_pins[13] = &steam32.io.PB_13;
-    microbit_pins[14] = &steam32.io.PB_14;
-    microbit_pins[15] = &steam32.io.PB_15;
-    microbit_pins[16] = &steam32.io.PE_4;
-    microbit_pins[17] = &steam32.io.PC_0;
-    microbit_pins[18] = &steam32.io.PC_1;
+    microbit_pins[0]  = &steami.io.p0;
+    microbit_pins[1]  = &steami.io.p1;
+    microbit_pins[2]  = &steami.io.p2;
+    microbit_pins[3]  = &steami.io.p3;
+    microbit_pins[4]  = &steami.io.p4;
+    microbit_pins[5]  = &steami.io.p5;
+    microbit_pins[6]  = &steami.io.p6;
+    microbit_pins[7]  = &steami.io.p7;
+    microbit_pins[8]  = &steami.io.p8;
+    microbit_pins[9]  = &steami.io.p9;
+    microbit_pins[10] = &steami.io.p10;
+    microbit_pins[11] = &steami.io.p11;
+    microbit_pins[12] = &steami.io.p12;
+    microbit_pins[13] = &steami.io.p13;
+    microbit_pins[14] = &steami.io.p14;
+    microbit_pins[15] = &steami.io.p15;
+    microbit_pins[16] = &steami.io.p16;
+    microbit_pins[17] = &steami.io.p19;
+    microbit_pins[18] = &steami.io.p20;
 
-    microbit_pwm_pins[0] = &steam32.io.PA_9;
-    microbit_pwm_pins[1] = &steam32.io.PA_6;
-    microbit_pwm_pins[2] = &steam32.io.PA_8;
+    microbit_pwm_pins[0] = &steami.io.p7;
+    microbit_pwm_pins[1] = &steami.io.p10;
+    microbit_pwm_pins[2] = &steami.io.p11;
 
-    microbit_analog_pad_pins[0] = &steam32.io.PC_4;
-    microbit_analog_pad_pins[1] = &steam32.io.PA_5;
-    microbit_analog_pad_pins[2] = &steam32.io.PC_5;
+    microbit_analog_pad_pins[0] = &steami.io.p0;
+    microbit_analog_pad_pins[1] = &steami.io.p1;
+    microbit_analog_pad_pins[2] = &steami.io.p2;
 
-    steam32.sleep(500);
+    steami.sleep(500);
 
     ssd->fill(0x00);
     ssd->drawText("Hello STeaMi !", 20, 60, 0xFF);
     ssd->show();
     printf("Hello STeaMi !\r\n");
-    steam32.sleep(1500);
+    steami.sleep(1500);
 
     vector<MenuEntry> mainMenuEntries = {{"Temp & Hum", []() -> void { show_temp_hum(); }},
                                          {"Pressure", []() -> void { show_pressure(); }},

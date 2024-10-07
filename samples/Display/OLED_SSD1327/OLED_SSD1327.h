@@ -1,9 +1,9 @@
 #pragma once
 
-#include "STEAM32_WB55RG.h"
+#include "STeaMi.h"
 
 #ifndef SAMPLE_MAIN
 #define SAMPLE_MAIN OledSample1327_main
 #endif
 
-void OledSample1327_main(codal::STEAM32_WB55RG& steam32);
+void OledSample1327_main(codal::STeaMi& steami);
