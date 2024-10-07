@@ -3,21 +3,21 @@
 
 #include <string>
 
-void hts221Sample(codal::STEAM32_WB55RG& steam32)
+void hts221Sample(codal::STeaMi& steami)
 {
-    steam32.serial.init(115200);
+    steami.serial.init(115200);
 
     printf("\r\n");
     printf("*******************************************\r\n");
     printf("*          Demonstration du HTS221        *\r\n");
     printf("*******************************************\r\n");
 
-    codal::HTS221 hts221(&steam32.i2c1, 0xBE);
+    codal::HTS221 hts221(&steami.i2cInt, 0xBE);
     hts221.init();
 
     hts221.setOutputRate(codal::HTS221_OUTPUT_RATE::RATE_7HZ);
 
-    steam32.sleep(2000);
+    steami.sleep(2000);
 
     std::string temperature;
     std::string humidity;
@@ -26,10 +26,10 @@ void hts221Sample(codal::STEAM32_WB55RG& steam32)
 
     while (true) {
         state = !state;
-        steam32.io.PC_10.setDigitalValue(state ? 1 : 0);
+        steami.io.ledGreen.setDigitalValue(state ? 1 : 0);
 
         if (!hts221.isTemperatureDataAvailable() || !hts221.isHumidityDataAvailable()) {
-            steam32.sleep(100);
+            steami.sleep(100);
             printf("Sensor is not ready\r\n");
             continue;
         }
@@ -41,6 +41,6 @@ void hts221Sample(codal::STEAM32_WB55RG& steam32)
         printf("%s \r\n", humidity.c_str());
         printf("\r\n");
 
-        steam32.sleep(1000);
+        steami.sleep(1000);
     }
 }

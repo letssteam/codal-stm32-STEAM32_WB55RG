@@ -5,10 +5,10 @@
 
 #include "BQ27441.h"
 
-void BQ27441_SampleMain(codal::STEAM32_WB55RG& steam32)
+void BQ27441_SampleMain(codal::STeaMi& steami)
 {
-    steam32.serial.init(115200);
-    steam32.sleep(2000);
+    steami.serial.init(115200);
+    steami.sleep(2000);
 
     printf("\r\n");
     printf("*******************************************\r\n");
@@ -16,12 +16,12 @@ void BQ27441_SampleMain(codal::STEAM32_WB55RG& steam32)
     printf("*******************************************\r\n");
 
     uint32_t start_time = getCurrentMillis();
-    codal::BQ27441 gauge(&steam32.i2c1);
+    codal::BQ27441 gauge(&steami.i2cInt);
     gauge.init();
 
     while (!gauge.is_init()) {
         printf("Wait for gauge init...\n");
-        steam32.sleep(500);
+        steami.sleep(500);
 
         if ((getCurrentMillis() - start_time) > 5000) {
             printf("TIMEOUT ! The Gauge is not ready, or there is no battery\n");
@@ -43,6 +43,6 @@ void BQ27441_SampleMain(codal::STEAM32_WB55RG& steam32)
         printf("Average power: %.2f W\n", gauge.get_average_power());
         printf("\n\n");
 
-        steam32.sleep(5000);
+        steami.sleep(5000);
     }
 }

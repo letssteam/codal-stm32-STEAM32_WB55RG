@@ -4,9 +4,9 @@
 
 #include "STM32Serial.h"
 
-void SerialSample_main(codal::STEAM32_WB55RG& steam32)
+void SerialSample_main(codal::STeaMi& steami)
 {
-    steam32.serial.init(115200);
+    steami.serial.init(115200);
 
     printf("\r\n");
     printf("*******************************************\r\n");
@@ -16,16 +16,16 @@ void SerialSample_main(codal::STEAM32_WB55RG& steam32)
     bool state = false;
 
     while (true) {
-        steam32.io.PC_11.setDigitalValue(state ? 1 : 0);
+        steami.io.ledGreen.setDigitalValue(state ? 1 : 0);
 
-        if (steam32.serial.isReadable() != 0) {
-            char c = static_cast<char>(steam32.serial.getChar(codal::ASYNC));
+        if (steami.serial.isReadable() != 0) {
+            char c = static_cast<char>(steami.serial.getChar(codal::ASYNC));
             str += c;
             printf("< %c \r\n", c);
             printf("> %s \r\n", str.c_str());
         }
 
-        steam32.sleep(250);
+        steami.sleep(250);
         state = !state;
     }
 }

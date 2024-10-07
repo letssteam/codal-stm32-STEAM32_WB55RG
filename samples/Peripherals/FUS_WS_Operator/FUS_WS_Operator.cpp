@@ -34,12 +34,12 @@ bool click_button(codal::STM32Pin& btn)
     return false;
 }
 
-void FUS_WS_Operator(STEAM32_WB55RG& steam32)
+void FUS_WS_Operator(STeaMi& steami)
 {
     // Start CRC clock for FUS
     __HAL_RCC_CRC_CLK_ENABLE();
 
-    steam32.serial.init(115200);
+    steami.serial.init(115200);
     HCI_SharedMemory hci;
     hci.init();
 
@@ -51,7 +51,7 @@ void FUS_WS_Operator(STEAM32_WB55RG& steam32)
     uint32_t offset_wireless_stack_version = 0x14;
 
     while (true) {
-        ManagedString str = steam32.serial.readUntil("\n", ASYNC);
+        ManagedString str = steami.serial.readUntil("\n", ASYNC);
 
         if (str.length() > 0) {
             string command(str.toCharArray(), str.length());

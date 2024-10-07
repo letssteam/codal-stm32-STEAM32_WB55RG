@@ -6,24 +6,24 @@
 #include "APDS9960.h"
 #include "ssd1327.h"
 
-void APDS9960_SampleMain(codal::STEAM32_WB55RG& steam32)
+void APDS9960_SampleMain(codal::STeaMi& steami)
 {
-    steam32.serial.init(115200);
+    steami.serial.init(115200);
 
     printf("\r\n");
     printf("*******************************************\r\n");
     printf("*        Demonstration du APDS9960        *\r\n");
     printf("*******************************************\r\n");
 
-    codal::SSD1327_SPI ssd(steam32.spi1, steam32.io.PD_0, steam32.io.PB_4, steam32.io.PA_12, 128, 128);
+    codal::SSD1327_SPI ssd(steami.spiInt, steami.io.csDisplay, steami.io.misoDisplay, steami.io.resetDisplay, 128, 128);
     ssd.init();
     ssd.fill(0x00);
     ssd.show();
 
-    codal::APDS9960 apds(steam32.i2c1, 0x72);
+    codal::APDS9960 apds(steami.i2cInt, 0x72);
     apds.init();
 
-    steam32.sleep(2000);
+    steami.sleep(2000);
 
     std::string str;
     std::array<uint16_t, 4> rgbc;
@@ -42,6 +42,6 @@ void APDS9960_SampleMain(codal::STEAM32_WB55RG& steam32)
         ssd.drawText("Clear: " + std::to_string(rgbc[3]), 20, 90, 0xff);
         ssd.show();
 
-        steam32.sleep(250);
+        steami.sleep(250);
     }
 }

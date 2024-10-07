@@ -32,10 +32,10 @@ const char* weekdayToStr(uint8_t wd)
     }
 }
 
-void RTC_main(STEAM32_WB55RG& steam32)
+void RTC_main(STeaMi& steami)
 {
     auto rtc     = STM32RTC();
-    auto& serial = steam32.serial;
+    auto& serial = steami.serial;
 
     serial.init(115200);
 
@@ -48,7 +48,7 @@ void RTC_main(STEAM32_WB55RG& steam32)
         printf("RTC init failed...\r\n");
 
         while (1) {
-            steam32.sleep(1);
+            steami.sleep(1);
         }
     }
 
@@ -106,7 +106,7 @@ void RTC_main(STEAM32_WB55RG& steam32)
                 print_help();
                 break;
         }
-        steam32.sleep(100);
+        steami.sleep(100);
     }
 }
 
