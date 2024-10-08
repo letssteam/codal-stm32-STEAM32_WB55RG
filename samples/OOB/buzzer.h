@@ -22,7 +22,7 @@ void buzzer_prog()
         }
 
         *freq -= p;
-        buzzer->setAnalogPeriodUs(1000000 / *freq);
+        buzzer->setAnalogPeriodUs(1'000'000 / *freq);
         buzzer->setAnalogValue(255);
     });
 
@@ -34,7 +34,7 @@ void buzzer_prog()
         }
 
         *freq += p;
-        buzzer->setAnalogPeriodUs(1000000 / *freq);
+        buzzer->setAnalogPeriodUs(1'000'000 / *freq);
         buzzer->setAnalogValue(255);
     });
 
@@ -50,7 +50,7 @@ void buzzer_prog()
         }
     });
 
-    buzzer->setAnalogPeriodUs(1000000 / *freq);
+    buzzer->setAnalogPeriodUs(1'000'000 / *freq);
     buzzer->setAnalogValue(255);
 
     while (1) {

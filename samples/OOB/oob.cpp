@@ -44,38 +44,38 @@ STM32Pin* led_green = nullptr;
 STM32Pin* led_blue  = nullptr;
 SSD1327_SPI* ssd    = nullptr;
 
-STM32Pin* btnMenu = nullptr;
-STM32Pin* btnA    = nullptr;
-STM32Pin* btnB    = nullptr;
-STM32Pin* buzzer  = nullptr;
+STM32Pin* btnMenu   = nullptr;
+STM32Pin* btnA      = nullptr;
+STM32Pin* btnB      = nullptr;
+STM32Pin* buzzer    = nullptr;
 
-MCP23009E* mcp  = nullptr;
-HTS221* hts     = nullptr;
-WSEN_PADS* pres = nullptr;
-VL53L1X* tof    = nullptr;
-ISM330DL* ism   = nullptr;
-LIS2MDL* lis    = nullptr;
+MCP23009E* mcp      = nullptr;
+HTS221* hts         = nullptr;
+WSEN_PADS* pres     = nullptr;
+VL53L1X* tof        = nullptr;
+ISM330DL* ism       = nullptr;
+LIS2MDL* lis        = nullptr;
 
-void Demo_OOB(codal::STM32STEAM32_WB55RG& steam32)
+void Demo_OOB(codal::STeaMi& steami)
 {
-    spi     = &steam32.spi1;
-    cs      = &steam32.io.PD_0;
-    dc      = &steam32.io.PB_4;
-    rst     = &steam32.io.PA_12;
-    ssd     = new SSD1327_SPI(*spi, *cs, *dc, *rst, 128, 128);
-    btnMenu = &steam32.io.PA_0;
-    btnA    = &steam32.io.PA_7;
-    btnB    = &steam32.io.PA_8;
-    buzzer  = &steam32.io.PA_11;
+    spi       = &steami.spiExt;
+    cs        = &steami.io.csDisplay;
+    dc        = &steami.io.misoDisplay;
+    rst       = &steami.io.resetDisplay;
+    ssd       = new SSD1327_SPI(*spi, *cs, *dc, *rst, 128, 128);
+    btnMenu   = &steami.io.buttonMenu;
+    btnA      = &steami.io.buttonA;
+    btnB      = &steami.io.buttonB;
+    buzzer    = &steami.io.speaker;
 
-    led_red   = &steam32.io.PC_12;
-    led_green = &steam32.io.PC_11;
-    led_blue  = &steam32.io.PC_10;
+    led_red   = &steami.io.ledRed;
+    led_green = &steami.io.ledGreen;
+    led_blue  = &steami.io.ledBlue;
 
     buzzer->setAnalogValue(0);
 
-    steam32.serial.init(115200);
-    steam32.sleep(500);
+    steami.serial.init(115'200);
+    steami.sleep(500);
 
     printf("Init...\r\n");
 
@@ -85,33 +85,33 @@ void Demo_OOB(codal::STM32STEAM32_WB55RG& steam32)
     ssd->show();
 
     printf("Init. MCP23009E...\n");
-    mcp = new MCP23009E(steam32.i2c1, 0x40, steam32.io.PB_1, steam32.io.PB_0);
+    mcp = new MCP23009E(steami.i2cInt, 0x40, steami.io.resetExpander, steami.io.irqExpander);
     mcp->setup(MCP_GP_RIGHT, MCP_DIR::INPUT);
     mcp->setup(MCP_GP_BOTTOM, MCP_DIR::INPUT);
     mcp->setup(MCP_GP_LEFT, MCP_DIR::INPUT);
     mcp->setup(MCP_GP_UP, MCP_DIR::INPUT);
 
     printf("Init. HTS221...\n");
-    hts = new HTS221(&steam32.i2c1, 0xBE);
+    hts = new HTS221(&steami.i2cInt, 0xBE);
     hts->init();
     hts->setOutputRate(codal::HTS221_OUTPUT_RATE::RATE_7HZ);
 
     printf("Init. WSEN_PADS...\n");
-    pres = new WSEN_PADS(steam32.i2c1, 0xBA);
+    pres = new WSEN_PADS(steami.i2cInt, 0xBA);
     pres->init();
 
     printf("Init. VL53L1X...\n");
-    tof = new VL53L1X(&steam32.i2c1);
+    tof = new VL53L1X(&steami.i2cInt);
     tof->init();
 
     printf("Init. ISM330DL...\n");
-    ism = new ISM330DL(&steam32.i2c1);
+    ism = new ISM330DL(&steami.i2cInt);
     ism->init();
     ism->setAccelerometerODR(ISM_ODR::F_1_66_KHZ);
     ism->setGyroscopeODR(ISM_ODR::F_208_HZ);
 
     printf("Init. LIS2MDL...\n");
-    lis = new LIS2MDL(&steam32.i2c1);
+    lis = new LIS2MDL(&steami.i2cInt);
     lis->init();
 
     unsigned select_prog = 0;

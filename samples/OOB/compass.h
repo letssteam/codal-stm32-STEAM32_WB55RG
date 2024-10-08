@@ -38,9 +38,9 @@ Lis2Data average_measure(unsigned nb_measure)
 
 void compass_prog()
 {
-    float size = 32;
-    float cx = 64;
-    float cy = 64;
+    float size        = 32;
+    float cx          = 64;
+    float cy          = 64;
     float calib_min_x = std::numeric_limits<float>::max();
     float calib_max_x = std::numeric_limits<float>::min();
     float calib_min_y = std::numeric_limits<float>::max();
@@ -63,11 +63,11 @@ void compass_prog()
 
         Lis2Data magn = average_measure(20);
 
-        calib_max_x = std::max(calib_max_x, magn.x);
-        calib_min_x = std::min(calib_min_x, magn.x);
+        calib_max_x   = std::max(calib_max_x, magn.x);
+        calib_min_x   = std::min(calib_min_x, magn.x);
 
-        calib_max_y = std::max(calib_max_y, magn.y);
-        calib_min_y = std::min(calib_min_y, magn.y);
+        calib_max_y   = std::max(calib_max_y, magn.y);
+        calib_min_y   = std::min(calib_min_y, magn.y);
     }
 
     printf("Calibration:\n\tx: [%.2f, %.2f]\n\ty: [%.2f, %.2f]\n", calib_min_x, calib_max_x, calib_min_y, calib_max_y);
@@ -81,16 +81,14 @@ void compass_prog()
 
         float x       = mapf(magn.x, calib_min_x, calib_max_x, -1, 1);
         float y       = -mapf(magn.y, calib_min_y, calib_max_y, -1, 1);
-        float angle = std::atan2(y, x);
+        float angle   = std::atan2(y, x);
 
-
-        double Acos = cos(angle);
-        double Asin = sin(angle);
-        double Bcos = cos(angle - TRI_ANGLE);
-        double Bsin = sin(angle - TRI_ANGLE);
-        double Ccos = cos(angle + TRI_ANGLE);
-        double Csin = sin(angle + TRI_ANGLE);
-
+        double Acos   = cos(angle);
+        double Asin   = sin(angle);
+        double Bcos   = cos(angle - TRI_ANGLE);
+        double Bsin   = sin(angle - TRI_ANGLE);
+        double Ccos   = cos(angle + TRI_ANGLE);
+        double Csin   = sin(angle + TRI_ANGLE);
 
         ssd->fill(0x00);
         ssd->drawCircle(64, 64, 50, false, 0xFF);
