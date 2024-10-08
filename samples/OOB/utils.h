@@ -23,8 +23,7 @@ std::string fToStr(float value, unsigned pres)
 bool click_button(codal::STM32Pin* btn)
 {
     if (btn->getDigitalValue() == 0) {
-        while (btn->getDigitalValue() == 0)
-            ;
+        while (btn->getDigitalValue() == 0);
 
         return true;
     }

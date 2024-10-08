@@ -1,8 +1,8 @@
 #pragma once
-#include "STM32STEAM32_WB55RG.h"
+#include "STeaMi.h"
 
 #ifndef SAMPLE_MAIN
-#define SAMPLE_MAIN Demo_OOB
+    #define SAMPLE_MAIN Demo_OOB
 #endif
 
-void Demo_OOB(codal::STM32STEAM32_WB55RG& steam32);
+void Demo_OOB(codal::STeaMi& steami);
