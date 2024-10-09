@@ -6,7 +6,7 @@
 #include "VL53L1X.h"
 
 #ifndef SAMPLE_MAIN
-#define SAMPLE_MAIN vlx53l1xSample
+    #define SAMPLE_MAIN vlx53l1xSample
 #endif
 
 void vlx53l1xSample(codal::STeaMi& steami);

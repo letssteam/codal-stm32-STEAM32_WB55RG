@@ -6,9 +6,9 @@
 
 void vlx53l1xSample(codal::STeaMi& steami)
 {
-    steami.serial.init(115200);
+    steami.serial.init(115'200);
 
-    steami.sleep(1000);
+    steami.sleep(1'000);
 
     printf("\r\n");
     printf("*******************************************\r\n");
@@ -20,7 +20,7 @@ void vlx53l1xSample(codal::STeaMi& steami)
 
     vl53l1x.init();
 
-    steami.sleep(2000);
+    steami.sleep(2'000);
 
     std::string distance;
 
@@ -29,6 +29,6 @@ void vlx53l1xSample(codal::STeaMi& steami)
 
         printf("%s \r\n", distance.c_str());
 
-        steami.sleep(1000);
+        steami.sleep(1'000);
     }
 }

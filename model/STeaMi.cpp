@@ -77,7 +77,7 @@ int STeaMi::init()
 ManagedString STeaMi::getSerial()
 {
     uint64_t n = target_get_serial();
-    int d      = 1000000000;
+    int d      = 1'000'000'000;
     int n1     = n % d;
     n /= d;
     int n2 = n % d;
@@ -135,13 +135,13 @@ extern "C" int __io_putchar(int ch);
 void STeaMi_dmesg_flush()
 {
 #if CONFIG_ENABLED(DMESG_SERIAL_DEBUG)
-#if DEVICE_DMESG_BUFFER_SIZE > 0
+    #if DEVICE_DMESG_BUFFER_SIZE > 0
     if (codalLogStore.ptr > 0 && (default_device_instance != nullptr)) {
         for (uint32_t i = 0; i < codalLogStore.ptr; i++) {
             __io_putchar(codalLogStore.buffer[i]);
         }
         codalLogStore.ptr = 0;
     }
-#endif
+    #endif
 #endif
 }

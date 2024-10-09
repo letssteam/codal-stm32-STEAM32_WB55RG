@@ -6,7 +6,7 @@
 
 void SerialSample_main(codal::STeaMi& steami)
 {
-    steami.serial.init(115200);
+    steami.serial.init(115'200);
 
     printf("\r\n");
     printf("*******************************************\r\n");

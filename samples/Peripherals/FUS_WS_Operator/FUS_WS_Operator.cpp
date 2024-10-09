@@ -25,8 +25,7 @@ struct Fus_WS_Status {
 bool click_button(codal::STM32Pin& btn)
 {
     if (btn.getDigitalValue() == 0) {
-        while (btn.getDigitalValue() == 0)
-            ;
+        while (btn.getDigitalValue() == 0);
 
         return true;
     }
@@ -39,7 +38,7 @@ void FUS_WS_Operator(STeaMi& steami)
     // Start CRC clock for FUS
     __HAL_RCC_CRC_CLK_ENABLE();
 
-    steami.serial.init(115200);
+    steami.serial.init(115'200);
     HCI_SharedMemory hci;
     hci.init();
 

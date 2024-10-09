@@ -60,7 +60,7 @@ enum class PinIndex : int {
     GPIO_8 = 51,
 };
 
-#define PIN_ID(X) (DEVICE_ID_IO_P0 + (int)::PinIndex::X)
+#define PIN_ID(X)    (DEVICE_ID_IO_P0 + (int)::PinIndex::X)
 
 #define ID_PIN_PC4   PIN_ID(PC_4)
 #define ID_PIN_PA5   PIN_ID(PA_5)
@@ -122,29 +122,29 @@ enum class PinIndex : int {
 // The can be user defined, but uniquely identify a pin when using the eventing APIs/
 //
 
-#define ID_PIN_P0  ID_PIN_PC4
-#define ID_PIN_P1  ID_PIN_PA5
-#define ID_PIN_P2  ID_PIN_PC5
-#define ID_PIN_P3  ID_PIN_PA2
-#define ID_PIN_P4  ID_PIN_PA4
-#define ID_PIN_P5  ID_PIN_PA7
-#define ID_PIN_P6  ID_PIN_PC3
-#define ID_PIN_P7  ID_PIN_PA9
-#define ID_PIN_P8  ID_PIN_PA15
-#define ID_PIN_P9  ID_PIN_PC2
-#define ID_PIN_P10 ID_PIN_PA6
-#define ID_PIN_P11 ID_PIN_PA8
-#define ID_PIN_P12 ID_PIN_PC6
-#define ID_PIN_P13 ID_PIN_PB13
-#define ID_PIN_P14 ID_PIN_PB14
-#define ID_PIN_P15 ID_PIN_PB15
-#define ID_PIN_P16 ID_PIN_PE4
-#define ID_PIN_P19 ID_PIN_PC1
-#define ID_PIN_P20 ID_PIN_PC0
-#define ID_PIN_P24 ID_PIN_GPIO3
-#define ID_PIN_P25 ID_PIN_GPIO4
-#define ID_PIN_P28 ID_PIN_GPIO1
-#define ID_PIN_P29 ID_PIN_GPIO2
+#define ID_PIN_P0                  ID_PIN_PC4
+#define ID_PIN_P1                  ID_PIN_PA5
+#define ID_PIN_P2                  ID_PIN_PC5
+#define ID_PIN_P3                  ID_PIN_PA2
+#define ID_PIN_P4                  ID_PIN_PA4
+#define ID_PIN_P5                  ID_PIN_PA7
+#define ID_PIN_P6                  ID_PIN_PC3
+#define ID_PIN_P7                  ID_PIN_PA9
+#define ID_PIN_P8                  ID_PIN_PA15
+#define ID_PIN_P9                  ID_PIN_PC2
+#define ID_PIN_P10                 ID_PIN_PA6
+#define ID_PIN_P11                 ID_PIN_PA8
+#define ID_PIN_P12                 ID_PIN_PC6
+#define ID_PIN_P13                 ID_PIN_PB13
+#define ID_PIN_P14                 ID_PIN_PB14
+#define ID_PIN_P15                 ID_PIN_PB15
+#define ID_PIN_P16                 ID_PIN_PE4
+#define ID_PIN_P19                 ID_PIN_PC1
+#define ID_PIN_P20                 ID_PIN_PC0
+#define ID_PIN_P24                 ID_PIN_GPIO3
+#define ID_PIN_P25                 ID_PIN_GPIO4
+#define ID_PIN_P28                 ID_PIN_GPIO1
+#define ID_PIN_P29                 ID_PIN_GPIO2
 
 #define ID_PIN_ACTIVATE_3V3_STLINK ID_PIN_PB2
 #define ID_PIN_CS_DISPLAY          ID_PIN_PD0

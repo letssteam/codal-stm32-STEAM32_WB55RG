@@ -8,7 +8,7 @@
 
 void APDS9960_SampleMain(codal::STeaMi& steami)
 {
-    steami.serial.init(115200);
+    steami.serial.init(115'200);
 
     printf("\r\n");
     printf("*******************************************\r\n");
@@ -23,7 +23,7 @@ void APDS9960_SampleMain(codal::STeaMi& steami)
     codal::APDS9960 apds(steami.i2cInt, 0x72);
     apds.init();
 
-    steami.sleep(2000);
+    steami.sleep(2'000);
 
     std::string str;
     std::array<uint16_t, 4> rgbc;
@@ -31,7 +31,7 @@ void APDS9960_SampleMain(codal::STeaMi& steami)
     while (true) {
         rgbc = apds.getColors();
 
-        str = "RGBC : " + std::to_string(rgbc[0]) + ", " + std::to_string(rgbc[1]) + ", " + std::to_string(rgbc[2]) +
+        str  = "RGBC : " + std::to_string(rgbc[0]) + ", " + std::to_string(rgbc[1]) + ", " + std::to_string(rgbc[2]) +
               ", " + std::to_string(rgbc[3]);
         printf("%s \r\n", str.c_str());
 

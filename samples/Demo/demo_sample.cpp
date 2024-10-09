@@ -38,27 +38,27 @@ constexpr uint8_t MCP_GP_BOTTOM = 5;
 constexpr uint8_t MCP_GP_LEFT   = 6;
 constexpr uint8_t MCP_GP_UP     = 7;
 
-STM32I2C* i2c_qwiic = nullptr;
-STM32SPI* spi       = nullptr;
-STM32Pin* cs        = nullptr;
-STM32Pin* dc        = nullptr;
-STM32Pin* rst       = nullptr;
-STM32Pin* led_red   = nullptr;
-STM32Pin* led_green = nullptr;
-STM32Pin* led_blue  = nullptr;
-SSD1327_SPI* ssd    = nullptr;
+STM32I2C* i2c_qwiic             = nullptr;
+STM32SPI* spi                   = nullptr;
+STM32Pin* cs                    = nullptr;
+STM32Pin* dc                    = nullptr;
+STM32Pin* rst                   = nullptr;
+STM32Pin* led_red               = nullptr;
+STM32Pin* led_green             = nullptr;
+STM32Pin* led_blue              = nullptr;
+SSD1327_SPI* ssd                = nullptr;
 
-STM32Pin* btnMenu = nullptr;
-STM32Pin* btnA    = nullptr;
-STM32Pin* btnB    = nullptr;
-STM32Pin* buzzer  = nullptr;
+STM32Pin* btnMenu               = nullptr;
+STM32Pin* btnA                  = nullptr;
+STM32Pin* btnB                  = nullptr;
+STM32Pin* buzzer                = nullptr;
 
-BQ27441* battery = nullptr;
-MCP23009E* mcp   = nullptr;
-HTS221* hts      = nullptr;
-WSEN_PADS* pres  = nullptr;
-VL53L1X* tof     = nullptr;
-STM32SAI* sai    = nullptr;
+BQ27441* battery                = nullptr;
+MCP23009E* mcp                  = nullptr;
+HTS221* hts                     = nullptr;
+WSEN_PADS* pres                 = nullptr;
+VL53L1X* tof                    = nullptr;
+STM32SAI* sai                   = nullptr;
 PDM2PCM pdm2pcm(16, 8, 0, 1);
 
 APDS9960* apds = nullptr;
@@ -67,9 +67,9 @@ LIS2MDL* lis   = nullptr;
 STM32SingleWireSerial* jacdac;
 DaplinkFlash* flash;
 
-STM32RTC* rtc = nullptr;
+STM32RTC* rtc                         = nullptr;
 
-ScreenMenu* mainMenu = nullptr;
+ScreenMenu* mainMenu                  = nullptr;
 
 STM32Pin* microbit_pins[19]           = {nullptr};
 STM32Pin* microbit_pwm_pins[3]        = {nullptr};
@@ -89,8 +89,7 @@ string fToStr(float value, unsigned pres)
 bool click_button(STM32Pin* btn)
 {
     if (btn->getDigitalValue() == 0) {
-        while (btn->getDigitalValue() == 0)
-            ;
+        while (btn->getDigitalValue() == 0);
 
         return true;
     }
@@ -107,8 +106,7 @@ void show_main_menu()
 
     while (1) {
         if (btnA->getDigitalValue() == 0) {
-            while (btnA->getDigitalValue() == 0)
-                ;
+            while (btnA->getDigitalValue() == 0);
             break;
         }
 
@@ -184,15 +182,13 @@ void show_acc_gyro_magn()
         }
 
         if (mcp->getLevel(MCP_GP_LEFT) == MCP_LOGIC_LEVEL::LOW) {
-            while (mcp->getLevel(MCP_GP_LEFT) == MCP_LOGIC_LEVEL::LOW)
-                ;
+            while (mcp->getLevel(MCP_GP_LEFT) == MCP_LOGIC_LEVEL::LOW);
 
             selection--;
         }
 
         if (mcp->getLevel(MCP_GP_RIGHT) == MCP_LOGIC_LEVEL::LOW) {
-            while (mcp->getLevel(MCP_GP_RIGHT) == MCP_LOGIC_LEVEL::LOW)
-                ;
+            while (mcp->getLevel(MCP_GP_RIGHT) == MCP_LOGIC_LEVEL::LOW);
 
             selection++;
         }
@@ -319,7 +315,7 @@ void show_buzzer()
         }
 
         *freq -= p;
-        buzzer->setAnalogPeriodUs(1000000 / *freq);
+        buzzer->setAnalogPeriodUs(1'000'000 / *freq);
         buzzer->setAnalogValue(255);
     });
 
@@ -331,7 +327,7 @@ void show_buzzer()
         }
 
         *freq += p;
-        buzzer->setAnalogPeriodUs(1000000 / *freq);
+        buzzer->setAnalogPeriodUs(1'000'000 / *freq);
         buzzer->setAnalogValue(255);
     });
 
@@ -347,7 +343,7 @@ void show_buzzer()
         }
     });
 
-    buzzer->setAnalogPeriodUs(1000000 / *freq);
+    buzzer->setAnalogPeriodUs(1'000'000 / *freq);
     buzzer->setAnalogValue(255);
 
     while (1) {
@@ -586,8 +582,8 @@ void show_rtc()
             }
         }
         else {
-            date = rtc->getDate();
-            time = rtc->getTime();
+            date     = rtc->getDate();
+            time     = rtc->getTime();
 
             *weekday = static_cast<uint8_t>(date.weekday);
             *day     = date.day;
@@ -759,7 +755,7 @@ void show_battery()
         }
 
         if (!battery->is_init()) {
-            if ((getCurrentMillis() - timeout) >= 5000) {
+            if ((getCurrentMillis() - timeout) >= 5'000) {
                 ssd->fill(0x00);
                 ssd->drawText("TIMEOUT", 44, 50, 0xFF);
                 ssd->drawText("No battery connected", 4, 60, 0xFF);
@@ -791,7 +787,7 @@ void show_battery()
                 ssd->show();
             }
 
-            if (getCurrentMillis() - timeout > 3000) {
+            if (getCurrentMillis() - timeout > 3'000) {
                 is_first_page = !is_first_page;
                 timeout       = getCurrentMillis();
             }
@@ -986,7 +982,7 @@ void show_pwm_microbit()
         if (getCurrentMillis() - start_timeout >= 100) {
             (*pwm_value) += pwm_step;
 
-            if (*pwm_value >= 1024) {
+            if (*pwm_value >= 1'024) {
                 *pwm_value = 0;
             }
 
@@ -994,7 +990,7 @@ void show_pwm_microbit()
 
             ssd->fill(0x00);
             ssd->drawText("Pin: 0" + to_string(*pin_id), 42, 36, 0xFF);
-            ssd->drawText(string("PWM value:") + ((*pwm_value < 1000) ? "0" : "") + ((*pwm_value < 100) ? "0" : "") +
+            ssd->drawText(string("PWM value:") + ((*pwm_value < 1'000) ? "0" : "") + ((*pwm_value < 100) ? "0" : "") +
                               ((*pwm_value < 10) ? "0" : "") + to_string(*pwm_value),
                           20, 52, 0xFF);
             ssd->drawText("Up: Prev. pin", 28, 84, 0xFF);
@@ -1094,7 +1090,7 @@ void show_jacdac()
         }
 
         if (is_tx_mode) {
-            if (getCurrentMillis() - timeout > 1000) {
+            if (getCurrentMillis() - timeout > 1'000) {
                 data_to_send++;
                 timeout = getCurrentMillis();
             }
@@ -1147,7 +1143,7 @@ void show_flash()
     ssd->show();
 
     flash->clearFlash();
-    fiber_sleep(1000);
+    fiber_sleep(1'000);
     flash->setFilename("DEMO", "CSV");
     flash->writeString("time;distance\n");
 
@@ -1156,7 +1152,7 @@ void show_flash()
             break;
         }
 
-        if (getCurrentMillis() - start_timeout_data >= 1000) {
+        if (getCurrentMillis() - start_timeout_data >= 1'000) {
             sprintf(buffer, "%u;%u\n", getCurrentMillis(), tof->getDistance());
             flash->writeString(buffer);
 
@@ -1196,7 +1192,7 @@ void show_qwic()
             break;
         }
 
-        if (getCurrentMillis() - timeout_send >= 1000) {
+        if (getCurrentMillis() - timeout_send >= 1'000) {
             i2c_qwiic->beginTransmission(0xAA);
             i2c_qwiic->write(0x96);
             i2c_qwiic->endTransmission();
@@ -1227,7 +1223,7 @@ void Demo_main(codal::STeaMi& steami)
 
     buzzer->setAnalogValue(0);
 
-    steami.serial.init(115200);
+    steami.serial.init(115'200);
     steami.sleep(500);
 
     printf("Init peripherals !\r\n");
@@ -1283,34 +1279,34 @@ void Demo_main(codal::STeaMi& steami)
     }
     sai->onReceiveData(micro_on_data);
 
-    jacdac->init(115200);
+    jacdac->init(115'200);
     jacdac->setMode(SingleWireMode::SingleWireTx);
 
     rtc->init();
 
-    microbit_pins[0]  = &steami.io.p0;
-    microbit_pins[1]  = &steami.io.p1;
-    microbit_pins[2]  = &steami.io.p2;
-    microbit_pins[3]  = &steami.io.p3;
-    microbit_pins[4]  = &steami.io.p4;
-    microbit_pins[5]  = &steami.io.p5;
-    microbit_pins[6]  = &steami.io.p6;
-    microbit_pins[7]  = &steami.io.p7;
-    microbit_pins[8]  = &steami.io.p8;
-    microbit_pins[9]  = &steami.io.p9;
-    microbit_pins[10] = &steami.io.p10;
-    microbit_pins[11] = &steami.io.p11;
-    microbit_pins[12] = &steami.io.p12;
-    microbit_pins[13] = &steami.io.p13;
-    microbit_pins[14] = &steami.io.p14;
-    microbit_pins[15] = &steami.io.p15;
-    microbit_pins[16] = &steami.io.p16;
-    microbit_pins[17] = &steami.io.p19;
-    microbit_pins[18] = &steami.io.p20;
+    microbit_pins[0]            = &steami.io.p0;
+    microbit_pins[1]            = &steami.io.p1;
+    microbit_pins[2]            = &steami.io.p2;
+    microbit_pins[3]            = &steami.io.p3;
+    microbit_pins[4]            = &steami.io.p4;
+    microbit_pins[5]            = &steami.io.p5;
+    microbit_pins[6]            = &steami.io.p6;
+    microbit_pins[7]            = &steami.io.p7;
+    microbit_pins[8]            = &steami.io.p8;
+    microbit_pins[9]            = &steami.io.p9;
+    microbit_pins[10]           = &steami.io.p10;
+    microbit_pins[11]           = &steami.io.p11;
+    microbit_pins[12]           = &steami.io.p12;
+    microbit_pins[13]           = &steami.io.p13;
+    microbit_pins[14]           = &steami.io.p14;
+    microbit_pins[15]           = &steami.io.p15;
+    microbit_pins[16]           = &steami.io.p16;
+    microbit_pins[17]           = &steami.io.p19;
+    microbit_pins[18]           = &steami.io.p20;
 
-    microbit_pwm_pins[0] = &steami.io.p7;
-    microbit_pwm_pins[1] = &steami.io.p10;
-    microbit_pwm_pins[2] = &steami.io.p11;
+    microbit_pwm_pins[0]        = &steami.io.p7;
+    microbit_pwm_pins[1]        = &steami.io.p10;
+    microbit_pwm_pins[2]        = &steami.io.p11;
 
     microbit_analog_pad_pins[0] = &steami.io.p0;
     microbit_analog_pad_pins[1] = &steami.io.p1;
@@ -1322,7 +1318,7 @@ void Demo_main(codal::STeaMi& steami)
     ssd->drawText("Hello STeaMi !", 20, 60, 0xFF);
     ssd->show();
     printf("Hello STeaMi !\r\n");
-    steami.sleep(1500);
+    steami.sleep(1'500);
 
     vector<MenuEntry> mainMenuEntries = {{"Temp & Hum", []() -> void { show_temp_hum(); }},
                                          {"Pressure", []() -> void { show_pressure(); }},

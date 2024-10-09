@@ -37,7 +37,7 @@ void RTC_main(STeaMi& steami)
     auto rtc     = STM32RTC();
     auto& serial = steami.serial;
 
-    serial.init(115200);
+    serial.init(115'200);
 
     printf("\r\n");
     printf("********************************************\r\n");
@@ -121,8 +121,7 @@ void print_help()
 
 void purge_serial_buffer(STM32Serial& serial)
 {
-    while (serial.getChar(SerialMode::ASYNC) != DEVICE_NO_DATA)
-        ;
+    while (serial.getChar(SerialMode::ASYNC) != DEVICE_NO_DATA);
 }
 
 void read_number(STM32Serial& serial, const char* prompt, uint16_t min_value, uint16_t max_value, uint16_t* value)

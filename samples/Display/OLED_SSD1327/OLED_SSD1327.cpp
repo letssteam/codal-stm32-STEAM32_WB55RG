@@ -469,7 +469,7 @@ void OledSample1327_main(codal::STeaMi& steami)
     SSD1327_SPI ssd(spi, cs, dc, rst, 128, 128);
     ssd.init();
 
-    uint8_t state = 0;
+    uint8_t state  = 0;
 
     STM32Pin& ledR = steami.io.ledRed;
     STM32Pin& ledG = steami.io.ledGreen;
@@ -485,7 +485,7 @@ void OledSample1327_main(codal::STeaMi& steami)
                 ssd.setData(pic[0], 128 * 64);
                 ssd.show();
 
-                steami.sleep(3000);
+                steami.sleep(3'000);
                 state++;
                 break;
 

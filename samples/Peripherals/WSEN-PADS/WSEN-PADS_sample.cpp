@@ -4,7 +4,7 @@
 
 void Wsen_PadsSample(codal::STeaMi& steami)
 {
-    steami.serial.init(115200);
+    steami.serial.init(115'200);
 
     printf("\r\n");
     printf("*******************************************\r\n");
@@ -14,11 +14,11 @@ void Wsen_PadsSample(codal::STeaMi& steami)
     codal::WSEN_PADS press(steami.i2cInt, 0xBA);
     press.init();
 
-    steami.sleep(2000);
+    steami.sleep(2'000);
 
     printf("Device ID : %X\r\n", press.whoAmI());
 
-    steami.sleep(2000);
+    steami.sleep(2'000);
 
     std::string pressure;
     std::string temperature;
@@ -36,6 +36,6 @@ void Wsen_PadsSample(codal::STeaMi& steami)
         printf("%s \r\n", temperature.c_str());
         printf("\r\n");
 
-        steami.sleep(1000);
+        steami.sleep(1'000);
     }
 }

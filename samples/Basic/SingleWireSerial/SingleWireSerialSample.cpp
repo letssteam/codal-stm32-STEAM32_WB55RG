@@ -20,8 +20,8 @@ void SingleSerialSerialSample_main(codal::STeaMi& steami)
     codal::STM32SingleWireSerial sserial(steami.io.jacdacTx);
     unsigned tx_counter = 0;
 
-    steami.serial.init(115200);
-    sserial.init(115200);
+    steami.serial.init(115'200);
+    sserial.init(115'200);
 
     printf("\r\n");
     printf("********************************************************\r\n");
@@ -58,7 +58,7 @@ void SingleSerialSerialSample_main(codal::STeaMi& steami)
 
             int res = sserial.putc(char(0x30 + tx_counter));
             printf("Send data: '%c' (byte send: %d)\n", char(0x30 + tx_counter), res);
-            steami.sleep(1000);
+            steami.sleep(1'000);
             tx_counter++;
         }
         else {

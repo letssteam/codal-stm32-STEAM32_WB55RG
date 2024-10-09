@@ -5,7 +5,7 @@
 
 void hts221Sample(codal::STeaMi& steami)
 {
-    steami.serial.init(115200);
+    steami.serial.init(115'200);
 
     printf("\r\n");
     printf("*******************************************\r\n");
@@ -17,7 +17,7 @@ void hts221Sample(codal::STeaMi& steami)
 
     hts221.setOutputRate(codal::HTS221_OUTPUT_RATE::RATE_7HZ);
 
-    steami.sleep(2000);
+    steami.sleep(2'000);
 
     std::string temperature;
     std::string humidity;
@@ -41,6 +41,6 @@ void hts221Sample(codal::STeaMi& steami)
         printf("%s \r\n", humidity.c_str());
         printf("\r\n");
 
-        steami.sleep(1000);
+        steami.sleep(1'000);
     }
 }

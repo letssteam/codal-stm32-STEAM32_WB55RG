@@ -11,7 +11,7 @@
 
 void BLE_Broadcast_Sample_main(codal::STeaMi& steami)
 {
-    steami.serial.init(115200);
+    steami.serial.init(115'200);
 
     printf("\r\n");
     printf("*******************************************\r\n");
@@ -42,9 +42,9 @@ void BLE_Broadcast_Sample_main(codal::STeaMi& steami)
     }
 
     while (1) {
-        steami.sleep(1000);
+        steami.sleep(1'000);
 
-        adv.setUserData(std::to_string(getCurrentMillis() / 1000) + " sec");
+        adv.setUserData(std::to_string(getCurrentMillis() / 1'000) + " sec");
         ble.setAdvertisingData(adv);
     }
 }

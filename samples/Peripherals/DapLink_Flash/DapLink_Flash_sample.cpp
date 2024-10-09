@@ -12,19 +12,19 @@ constexpr uint8_t FLASH_GET_FILENAME    = 0x04;
 constexpr uint8_t FLASH_READ_STATUS_REG = 0x80;
 constexpr uint8_t FLASH_READ_ERROR_REG  = 0x81;
 
-bool state_led = false;
+bool state_led                          = false;
 
 void DAPLINK_FLASH_Sample(codal::STeaMi& steami)
 {
     steami.init();
-    steami.serial.init(115200);
+    steami.serial.init(115'200);
 
     steami.io.speaker.setDigitalValue(0);  // Force HP low state...
 
     auto i2c = steami.i2cInt;
 
     printf("Ready !\r\n");
-    codal::fiber_sleep(1000);
+    codal::fiber_sleep(1'000);
 
     char c;
     while (1) {

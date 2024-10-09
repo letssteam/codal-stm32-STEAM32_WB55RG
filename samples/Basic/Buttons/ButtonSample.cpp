@@ -9,9 +9,9 @@ void ButtonSample_main(codal::STeaMi& steami)
     STM32Pin& led_green = steami.io.ledGreen;
     STM32Pin& led_blue  = steami.io.ledBlue;
 
-    STM32Pin& btn_A = steami.io.buttonA;
-    STM32Pin& btn_B = steami.io.buttonB;
-    STM32Pin& btn_M = steami.io.buttonMenu;
+    STM32Pin& btn_A     = steami.io.buttonA;
+    STM32Pin& btn_B     = steami.io.buttonB;
+    STM32Pin& btn_M     = steami.io.buttonMenu;
 
     while (true) {
         led_red.setDigitalValue(btn_A.getDigitalValue() ? 0 : 1);

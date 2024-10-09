@@ -7,8 +7,8 @@
 
 void BQ27441_SampleMain(codal::STeaMi& steami)
 {
-    steami.serial.init(115200);
-    steami.sleep(2000);
+    steami.serial.init(115'200);
+    steami.sleep(2'000);
 
     printf("\r\n");
     printf("*******************************************\r\n");
@@ -23,10 +23,9 @@ void BQ27441_SampleMain(codal::STeaMi& steami)
         printf("Wait for gauge init...\n");
         steami.sleep(500);
 
-        if ((getCurrentMillis() - start_time) > 5000) {
+        if ((getCurrentMillis() - start_time) > 5'000) {
             printf("TIMEOUT ! The Gauge is not ready, or there is no battery\n");
-            while (1)
-                ;
+            while (1);
         }
     }
 
@@ -43,6 +42,6 @@ void BQ27441_SampleMain(codal::STeaMi& steami)
         printf("Average power: %.2f W\n", gauge.get_average_power());
         printf("\n\n");
 
-        steami.sleep(5000);
+        steami.sleep(5'000);
     }
 }

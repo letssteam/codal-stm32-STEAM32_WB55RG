@@ -12,8 +12,8 @@ using namespace codal;
 
 constexpr uint16_t AUDIO_BUFFER = 128;
 
-STM32SAI* sai  = nullptr;
-STM32Pin* btnA = nullptr;
+STM32SAI* sai                   = nullptr;
+STM32Pin* btnA                  = nullptr;
 PDM2PCM pdm2pcm(16, 2, 0, 1);
 
 uint16_t rawMicData[AUDIO_BUFFER];
@@ -22,8 +22,7 @@ bool processedData = true;
 bool is_btn_pressed(STM32Pin* btn)
 {
     if (btn->getDigitalValue() == 0) {
-        while (btn->getDigitalValue() == 0)
-            ;
+        while (btn->getDigitalValue() == 0);
         return true;
     }
 
@@ -50,7 +49,7 @@ void SAI_main(STeaMi& steami)
 {
     bool is_paused = false;
 
-    steami.serial.init(115200);
+    steami.serial.init(115'200);
     steami.sleep(500);
 
     printf("Init\r\n");
@@ -59,8 +58,7 @@ void SAI_main(STeaMi& steami)
 
     if (!sai->init()) {
         printf("Failed to init SAI\r\n");
-        while (1)
-            ;
+        while (1);
     }
 
     sai->onReceiveData(onData);
