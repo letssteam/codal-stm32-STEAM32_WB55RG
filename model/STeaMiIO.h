@@ -253,8 +253,8 @@ class STeaMiIO {
     STM32Pin sck;
     STM32Pin cs;
 
-    STM32Pin ledGreen;
     STM32Pin ledBlue;
+    STM32Pin ledGreen;
     STM32Pin ledRed;
 
     STM32Pin ledBLE;
